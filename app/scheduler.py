@@ -6,7 +6,7 @@ from app.models import Class, Teacher, Room, Subject
 
 
 def get_available_assignments(class_id):
-    from app.models import Class
+    from app.models import Class, Room
     class_instance = Class.query.get(class_id)
     if not class_instance:
         return []
@@ -14,12 +14,10 @@ def get_available_assignments(class_id):
     school_id = class_instance.school_id
     teachers = class_instance.teachers
     subjects = class_instance.subjects
-    from app.models import Room
     rooms = Room.query.filter_by(school_id=school_id).all()
 
     assignments = []
     for teacher in teachers:
-        # dostępność nauczyciela – zapisana jako "8,9,10,11"
         if teacher.availability:
             try:
                 available_hours = [int(x.strip()) for x in teacher.availability.split(',')]
@@ -54,13 +52,16 @@ def ilp_schedule_generation(class_id, data):
     assignments = data['assignments']
     num_assignments = len(assignments)
 
+
     y = {}
     for i in range(num_slots):
         for j in range(num_assignments):
             y[i, j] = solver.BoolVar(f'y_{i}_{j}')
 
+
     for i in range(num_slots):
         solver.Add(sum(y[i, j] for j in range(num_assignments)) == 1)
+
 
     penalties = {}
     for i in range(num_slots):
@@ -81,17 +82,19 @@ def ilp_schedule_generation(class_id, data):
         for j in range(num_assignments):
             if y[i, j].solution_value() > 0.5:
                 lesson_hour = 8 + (i % lessons_per_day)
-                day_of_week = i // lessons_per_day  # 0 = poniedziałek, ..., 4 = piątek
+                day_of_week = i // lessons_per_day  # 0: poniedziałek, ..., 4: piątek
                 entry = assignments[j].copy()
                 entry['class_id'] = class_id
                 entry['day_of_week'] = day_of_week
                 entry['lesson_hour'] = lesson_hour
+                entry['start_hour'] = lesson_hour
                 base_schedule.append(entry)
                 break
     return base_schedule
 
 
 def evaluate_schedule(schedule, data):
+
     penalty = 0
     for entry in schedule:
         if entry.get('start_hour', 8) != 8:
@@ -110,7 +113,6 @@ def mutate_schedule(schedule):
 
 
 def ga_refinement(base_schedule, data, iterations=100):
-
     current_schedule = base_schedule
     current_fitness = evaluate_schedule(current_schedule, data)
 
