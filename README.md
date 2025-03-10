@@ -1,2 +1,1 @@
-# DeepScheduleBackend
-DeepScheduleBackend
+# DeepSchedule Backend
