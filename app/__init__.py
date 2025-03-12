@@ -15,6 +15,7 @@ def create_app():
     ma.init_app(app)
 
     # Rejestracja blueprintów
+    from .blueprints.auth import auth_bp
     from .blueprints.schools import schools_bp
     from .blueprints.teachers import teachers_bp
     from .blueprints.subjects import subjects_bp
@@ -28,6 +29,7 @@ def create_app():
     app.register_blueprint(rooms_bp, url_prefix="/rooms")
     app.register_blueprint(classes_bp, url_prefix="/classes")
     app.register_blueprint(schedules_bp, url_prefix="/schedules")
+    app.register_blueprint(auth_bp, url_prefix="/auth")
 
     with app.app_context():
         db.create_all()
