@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS  # Import Flask-CORS
 from .config import Config
 
 db = SQLAlchemy()
@@ -14,14 +15,15 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
 
-    # Rejestracja blueprintów
-    from .blueprints.auth import auth_bp
+    CORS(app)
+
     from .blueprints.schools import schools_bp
     from .blueprints.teachers import teachers_bp
     from .blueprints.subjects import subjects_bp
     from .blueprints.rooms import rooms_bp
     from .blueprints.classes import classes_bp
     from .blueprints.schedules import schedules_bp
+    from .blueprints.auth import auth_bp
 
     app.register_blueprint(schools_bp, url_prefix="/schools")
     app.register_blueprint(teachers_bp, url_prefix="/teachers")
