@@ -1,0 +1,138 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  height: 100%;
+}
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.header p {
+  margin: 5px 0 0;
+  font-size: 16px;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.timetable {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 1000px;
+  background-color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  table-layout: fixed;
+}
+
+.timetable th,
+.timetable td {
+  border: 1px solid #ccc;
+  padding: 12px;
+  text-align: center;
+  width: 180px;
+  height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.timetable th {
+  background-color: #f0f0f0;
+}
+
+.btn {
+  margin-top: 30px;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.info {
+  margin-bottom: 20px;
+  color: #555;
+  font-size: 18px;
+}
+
+.footer {
+  background-color: #f0f0f0;
+  padding: 15px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.teacher-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 200, 0.95);
+  color: #333;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+.form-container label {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-size: 16px;
+  text-align: left;
+}
+
+.form-container input {
+  padding: 8px;
+  font-size: 16px;
+  margin-top: 4px;
+}
