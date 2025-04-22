@@ -1,0 +1,35 @@
+{
+  "name": "deepschedulebackend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "> **Dokumentacja i changelog** dla backendu aplikacji w Node.js, wykorzystującego **lekki algorytm AI** do generowania optymalnego planu lekcji.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeroJJ555/DeepScheduleBackend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HeroJJ555/DeepScheduleBackend/issues"
+  },
+  "homepage": "https://github.com/HeroJJ555/DeepScheduleBackend#readme",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "glpk.js": "^4.0.2",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
