@@ -81,10 +81,10 @@ npm run dev
 
 ---
 
-## 📖 Dalsze kroki
+## 📖 TODO
 
-- 🔒 Dodaj role i uprawnienia  
-- 🎨 Rozbuduj UI: drag-and-drop korekty  
+- 🔒 Dodać role i uprawnienia  
+- 🎨 Frontend i UI: drag-and-drop, korekty  
 - 📦 Docker + CI/CD  
 - 🧪 Testy E2E (Cypress, Jest + Supertest)  
 
