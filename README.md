@@ -1,213 +1,95 @@
-# DeepScheduleBackend
+<p align="center">
+  <pre>
+______                _____      _              _       _      
+|  _  \              /  ___|    | |            | |     | |     
+| | | |___  ___ _ __ \ `--.  ___| |__   ___  __| |_   _| | ___ 
+| | | / _ \/ _ \ '_ \ `--. \/ __| '_ \ / _ \/ _` | | | | |/ _ \
+| |/ /  __/  __/ |_) /\__/ / (__| | | |  __/ (_| | |_| | |  __/
+|___/ \___|\___| .__/\____/ \___|_| |_|\___|\__,_|\__,_|_|\___|
+               | |                                             
+               |_|                                             
+  </pre>
+  <h3 align="center">DeepSchedule Monorepo</h3>
+  <p align="center">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" />
+    <img src="https://img.shields.io/badge/Node-%3E%3D18-brightgreen" alt="Node.js version" />
+    <img src="https://img.shields.io/badge/TypeScript-%3E%3D4.0-blue" alt="TypeScript version" />
+  </p>
+</p>
 
-Backend **DeepSchedule** — system automatycznego i ręcznego układania planów lekcji.  
-Opiera się na Node.js (ESM), Express, Prisma (SQLite) i solverze GLPK.js (WASM).
-
----
-
-## Spis treści
-
-- [Funkcjonalność](#funkcjonalność)  
-- [Technologie](#technologie)  
-- [Instalacja i uruchomienie](#uruchomienie)  
-- [Struktura projektu](#struktura-projektu)  
-- [Zmienne środowiskowe](#zmienne-środowiskowe)  
-- [Baza danych (Prisma)](#baza-danych-prisma)  
-- [API — lista endpointów](#api--lista-endpointów)  
-  - [Publiczne (bez JWT)](#publiczne-bez-jwt)  
-  - [Zabezpieczone (z JWT)](#zabezpieczone-z-jwt)  
-- [Solver (GLPK.js)](#solver-glpkjs)  
-- [Frontend](#frontend)  
-- [Możliwe usprawnienia](#możliwe-usprawnienia)  
-
----
-
-## Funkcjonalność
-
-1. **Rejestracja, logowanie, reset hasła**  
-2. **CRUD** dla:
-   - użytkowników (`/users`),  
-   - szkół (`/schools`),  
-   - nauczycieli (`/teachers`),  
-   - klas (`/classes`),  
-   - sal (`/rooms`),  
-   - slotów godzinowych (`/timeslots`),  
-3. **Generowanie planu** (`/generate`) i **pobieranie** (`/timetable`),  
-4. **Manualne poprawki** wpisów planu (`/entries`).  
+> **Automatyczne i ręczne układanie planów lekcji** • Express • Prisma • React • GLPK.js
 
 ---
 
-## Technologie
-
-- **Node.js** (v18+), **ES Modules**  
-- **Express** — serwer HTTP  
-- **Prisma** + SQLite — ORM i baza  
-- **GLPK.js** (WASM) — solver CP-SAT  
-- **AJV** + `ajv-formats` — walidacja JSON  
-- **bcrypt**, **jsonwebtoken** — uwierzytelnianie  
-- **jest**, **supertest** (opcjonalnie) — testy  
-
----
-
-## Uruchomienie
-   Domyślnie nasłuchuje:  
-   ```
-   http://localhost:3000
-   ```
-
----
-
-## Struktura projektu
+## 📁 Struktura
 
 ```
-├── .env
-├── prisma/
-│   └── schema.prisma       # modele i relacje
-├── src/
-│   ├── config/
-│   │   └── index.js        # .env → config
-│   ├── db.js               # inicjalizacja Prisma Client
-│   ├── app.js              # Express + middleware + routes
-│   ├── server.js           # punkt wejścia + statyczne pliki
-│   ├── solver.js           # GLPK.js solver
-│   ├── middleware/
-│   │   ├── auth.js         # JWT
-│   │   ├── errorHandler.js # globalny error handler
-│   │   └── validateSchema.js # AJV
-│   ├── utils/
-│   │   ├── logger.js       # console wrapper
-│   │   ├── email.js        # stub mailer
-│   │   └── schemaDefs.js   # JSON-schemy
-│   ├── routes/             # express.Router dla zasobów
-│   ├── controllers/        # HTTP → services
-│   └── services/           # logika biznesowa + DB + solver
-└── frontend/               # statyczne UI (jeśli serwowane)
+/
+├── backend/       # Express + Prisma + solver
+├── frontend/      # React + Vite + UI
+├── package.json   # workspaces & root scripts
+└── README.md      # this file
 ```
 
 ---
 
-## Zmienne środowiskowe
+## 🚀 Szybki start
 
-W pliku `.env`:
+```bash
+# 1. Zainstaluj wszystkie dependencies
+npm install
 
-```dotenv
-DATABASE_URL="file:./dev.db"
-JWT_SECRET="długi_bezpieczny_secret"
-PORT=3000
+# 2. Uruchom development (backend + frontend równocześnie)
+npm run dev
 ```
 
----
-
-## Baza danych (Prisma)
-
-Modele w `prisma/schema.prisma`:
-
-- **User**, **School**, **Teacher**, **Class**, **Room**, **TimeSlot**, **TimetableEntry**  
-- **SchoolOnUser** (n:m User↔School)  
-- **ClassSubject** (n:m Class↔Subject + liczba godzin)  
-- **TeacherSubject** (n:m Teacher↔Subject)  
-
-Każdy relacyjny model ma pole odwrotne np. `Class -> classSubjects`, `Subject -> classSubjects, teacherSubjects`.
+- **Backend**: http://localhost:3000  
+- **Frontend**: http://localhost:5173  
 
 ---
 
-## API — lista endpointów
+## 🔗 Ważne skrypty
 
-### Publiczne (bez JWT)
-
-| Metoda | Ścieżka                          | Opis                                      |
-|--------|----------------------------------|-------------------------------------------|
-| POST   | `/auth/register`                 | Rejestracja (`{email,password,name}`)     |
-| POST   | `/auth/login`                    | Logowanie (`{email,password}`) → JWT      |
-| POST   | `/auth/password-reset/request`   | Prośba o reset (`{email}`)                |
-| POST   | `/auth/password-reset/confirm`   | Reset hasła (`{token,newPassword}`)       |
-| GET    | `/health`                        | „Alive” check                             |
-
-### Zabezpieczone (z JWT; `Authorization: Bearer <token>`)
-
-#### Użytkownik `/users`
-
-| Metoda | Ścieżka            | Opis                                 | Body                         |
-|--------|--------------------|--------------------------------------|------------------------------|
-| GET    | `/users/me`        | Pobierz własne dane                  | —                            |
-| PUT    | `/users/me`        | Edycja nazwy i/lub hasła             | `{name?,password?}`          |
-| POST   | `/users/invite`    | Zaproś do szkoły                     | `{email,role,schoolId}`      |
-
-#### Szkoły `/schools`
-
-| Metoda | Ścieżka            | Opis                     | Body `{name,address?,city?}` |
-|--------|--------------------|--------------------------|------------------------------|
-| GET    | `/schools`         | Lista dostępnych szkół   | —                            |
-| POST   | `/schools`         | Nowa szkoła              | —                            |
-| GET    | `/schools/:id`     | Szczegóły                | —                            |
-| PUT    | `/schools/:id`     | Edycja                   | —                            |
-| DELETE | `/schools/:id`     | Usuń                      | —                            |
-
-#### Nauczyciele `/schools/:schoolId/teachers` & `/teachers/:teacherId`
-
-CRUD nauczycieli w danej szkole.
-
-#### Klasy `/schools/:schoolId/classes` & `/classes/:classId`
-
-CRUD klas.
-
-#### Sale `/schools/:schoolId/rooms` & `/rooms/:roomId`
-
-CRUD sal.
-
-#### Sloty `/schools/:schoolId/timeslots` & `/timeslots/:timeslotId`
-
-CRUD slotów.
-
-#### Plan lekcji
-
-| Metoda | Ścieżka        | Opis                            | Body         |
-|--------|----------------|---------------------------------|--------------|
-| POST   | `/generate`    | Generuje i zapisuje plan        | —            |
-| GET    | `/timetable`   | Pobiera ostatni zapisany plan   | —            |
-| DELETE | `/timetable`   | Czyści wszystkie wpisy planu    | —            |
-
-#### Manualne wpisy `/entries`
-
-| Metoda | Ścieżka                 | Opis                                    | Body                                   |
-|--------|-------------------------|-----------------------------------------|----------------------------------------|
-| GET    | `/entries`              | Lista wszystkich wpisów planu           | —                                      |
-| POST   | `/entries`              | Dodaj jeden wpis                        | `{classId,subjectId,timeslotId,roomId?,teacherId?}` |
-| PUT    | `/entries/:entryId`     | Edytuj wpis                             | dowolne pola z powyższego               |
-| DELETE | `/entries/:entryId`     | Usuń wpis                               | —                                      |
+| Komenda             | Co robi                               |
+|---------------------|---------------------------------------|
+| `npm run dev`       | startuje backend & frontend           |
+| `npm run dev:backend`  | startuje tylko backend (nodemon)  |
+| `npm run dev:frontend` | startuje tylko frontend (Vite)   |
 
 ---
 
-## Solver (GLPK.js)
+## 🛠️ Pod maską
 
-- **Wejście** (`generateTimetable`):
-  ```js
-  {
-    teachersMap: { [teacherId]: [subjectId,…] },
-    classIds:    [classId,…],
-    subjectsMap: { [classId]: { [subjectId]: hours } },
-    timeslots:   [ {id,day,hour}, … ]
-  }
-  ```
-- **buildModel**: zmienne binarne, constraints:
-  - każda klasa ma dokładnie `hours` lekcji z `subject`,
-  - każdy nauczyciel max 1 lekcja/slot.
-- **solveModel** → GLPK CP-SAT.
-- **parseSolution** → tablica `{classId,subjectId,timeslotId}`.
+- **backend/**  
+  - `src/server.js` – Express + statyczne pliki  
+  - `src/app.js` – middleware, routing  
+  - `src/solver.js` – GLPK.js CP-SAT solver  
+  - `src/services/` & `src/controllers/` – logika business / HTTP  
+  - **Prisma**: `prisma/schema.prisma` + SQLite  
+- **frontend/**  
+  - `src/main.tsx` – punkt wejścia  
+  - `src/App.tsx` & `src/routes/` – routing React Router  
+  - `src/api/` – Axios + React Query client  
+  - `src/features/…` – CRUD screens & Timetable view  
 
 ---
 
-## Frontend
+## 🤝 Autorzy
 
-- TODO...
+- Jan Jakubowski  
+- Wiktor Alisch  
 
 ---
 
-## Możliwe usprawnienia
+## 📖 Dalsze kroki
 
-- **Optymalizacja** solvera (funkcja celu, block scheduling).  
-- **Roles & permissions** rozszerzone (np. dyrektor vs nauczyciel).  
-- **Webhooki / powiadomienia** (np. e-mail, Slack).  
+- 🔒 Dodaj role i uprawnienia  
+- 🎨 Rozbuduj UI: drag-and-drop korekty  
+- 📦 Docker + CI/CD  
+- 🧪 Testy E2E (Cypress, Jest + Supertest)  
 
+---
 
-_Created by DeepSchedule Team (JJ & WA)_  
+<p align="center">
+  Made with ❤️ by the DeepSchedule Team
+</p>

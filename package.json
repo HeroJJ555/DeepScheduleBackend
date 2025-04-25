@@ -1,45 +1,24 @@
 {
-  "name": "deepschedulebackend",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "> **Dokumentacja i changelog** dla backendu aplikacji w Node.js, wykorzystującego **lekki algorytm AI** do generowania optymalnego planu lekcji.",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "prisma": {
-    "schema": "prisma/schema.prisma"
-  },
-  "scripts": {
-    "start": "node src/server.js",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/HeroJJ555/DeepScheduleBackend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/HeroJJ555/DeepScheduleBackend/issues"
-  },
-  "homepage": "https://github.com/HeroJJ555/DeepScheduleBackend#readme",
-  "dependencies": {
-    "@prisma/client": "^6.6.0",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
-    "bcrypt": "^5.1.1",
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "glpk.js": "^4.0.2",
-    "jsonwebtoken": "^9.0.2",
-    "path": "^0.12.7"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "prisma": "^6.6.0"
+    "name": "deepschedule",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Monorepo for DeepSchedule backend and frontend",
+    "contributors": [
+      "Jan Jakubowski",
+      "Wiktor Alisch"
+    ],
+    "license": "MIT",
+    "workspaces": [
+      "backend",
+      "frontend"
+    ],
+    "scripts": {
+      "dev:backend": "cd backend && npm run dev",
+      "dev:frontend": "cd frontend && npm run dev",
+      "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\""
+    },
+    "devDependencies": {
+      "concurrently": "^7.6.0"
+    }
   }
-}
+  
