@@ -44,82 +44,86 @@ model School {
 }
 
 model SchoolOnUser {
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  school    School   @relation(fields: [schoolId], references: [id])
-  schoolId  Int
-  role      SchoolRole @default(TEACHER)
+  user     User       @relation(fields: [userId], references: [id])
+  userId   Int
+  school   School     @relation(fields: [schoolId], references: [id])
+  schoolId Int
+  role     SchoolRole @default(TEACHER)
 
   @@id([userId, schoolId])
 }
 
 model Teacher {
-  id        Int            @id @default(autoincrement())
-  name      String
-  email     String?
-  school    School         @relation(fields: [schoolId], references: [id])
-  schoolId  Int
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  entries   TimetableEntry[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  email           String?
+  school          School           @relation(fields: [schoolId], references: [id])
+  schoolId        Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  entries         TimetableEntry[]
+  teacherSubjects TeacherSubject[]
 }
 
 model Subject {
-  id        Int            @id @default(autoincrement())
-  name      String
-  school    School         @relation(fields: [schoolId], references: [id])
-  schoolId  Int
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  entries   TimetableEntry[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  school          School           @relation(fields: [schoolId], references: [id])
+  schoolId        Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  entries         TimetableEntry[]
+  teacherSubjects TeacherSubject[]
+  classSubjects   ClassSubject[]
 }
 
 model Class {
-  id        Int            @id @default(autoincrement())
-  name      String
-  school    School         @relation(fields: [schoolId], references: [id])
-  schoolId  Int
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  entries   TimetableEntry[]
+  id            Int              @id @default(autoincrement())
+  name          String
+  school        School           @relation(fields: [schoolId], references: [id])
+  schoolId      Int
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  entries       TimetableEntry[]
+  classSubjects ClassSubject[]
 }
 
 model Room {
-  id        Int            @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   name      String
   capacity  Int?
-  school    School         @relation(fields: [schoolId], references: [id])
+  school    School           @relation(fields: [schoolId], references: [id])
   schoolId  Int
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   entries   TimetableEntry[]
 }
 
 model TimeSlot {
-  id        Int            @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   day       Int
   hour      Int
-  school    School         @relation(fields: [schoolId], references: [id])
+  school    School           @relation(fields: [schoolId], references: [id])
   schoolId  Int
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   entries   TimetableEntry[]
 }
 
 model TimetableEntry {
-  id          Int        @id @default(autoincrement())
-  class       Class      @relation(fields: [classId], references: [id])
-  classId     Int
-  subject     Subject    @relation(fields: [subjectId], references: [id])
-  subjectId   Int
-  teacher     Teacher?   @relation(fields: [teacherId], references: [id])
-  teacherId   Int?
-  timeslot    TimeSlot   @relation(fields: [timeslotId], references: [id])
-  timeslotId  Int
-  room        Room?      @relation(fields: [roomId], references: [id])
-  roomId      Int?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id         Int      @id @default(autoincrement())
+  class      Class    @relation(fields: [classId], references: [id])
+  classId    Int
+  subject    Subject  @relation(fields: [subjectId], references: [id])
+  subjectId  Int
+  teacher    Teacher? @relation(fields: [teacherId], references: [id])
+  teacherId  Int?
+  timeslot   TimeSlot @relation(fields: [timeslotId], references: [id])
+  timeslotId Int
+  room       Room?    @relation(fields: [roomId], references: [id])
+  roomId     Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model ClassSubject {
@@ -128,13 +132,15 @@ model ClassSubject {
   subject   Subject @relation(fields: [subjectId], references: [id])
   subjectId Int
   hours     Int
+
   @@id([classId, subjectId])
 }
 
 model TeacherSubject {
-  teacher    Teacher @relation(fields: [teacherId], references: [id])
-  teacherId  Int
-  subject    Subject @relation(fields: [subjectId], references: [id])
-  subjectId  Int
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  teacherId Int
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId Int
+
   @@id([teacherId, subjectId])
 }
