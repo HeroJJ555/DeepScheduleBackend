@@ -1,5 +1,5 @@
 import { prisma } from '../db.js';
-import solver from './../solver.js';
+import * as solver from '../solver.js';
 
 export async function clearTimetable(user) {
   return prisma.timetableEntry.deleteMany({
@@ -10,22 +10,66 @@ export async function clearTimetable(user) {
 export async function getTimetable(user) {
   return prisma.timetableEntry.findMany({
     where: { timeslot: { schoolId: { in: user.schoolIds } } },
-    include: { class: true, subject: true, teacher: true, timeslot: true, room: true }
+    include: {
+      class:    { select: { id: true, name: true } },
+      subject:  { select: { id: true, name: true } },
+      teacher:  { select: { id: true, name: true } },
+      timeslot: { select: { id: true, day: true, hour: true } },
+      room:     { select: { id: true, name: true } }
+    }
   });
 }
 
 /**
- * (TODO: zaimplementować seed danych i mapowanie DB→solver→DB)
+ * @param {Object} user
  */
 export async function generateTimetable(user) {
-  // 1. wyczyść istniejące
   await clearTimetable(user);
 
-  // 2. pobierz dane z DB, input dla solvera
+  const timeslots = await prisma.timeSlot.findMany({
+    where: { schoolId: { in: user.schoolIds } },
+    select: { id: true, day: true, hour: true }
+  });
 
-  // 3. const plan = await solver.generateTimetable(input);
+  const classes = await prisma.class.findMany({
+    where: { schoolId: { in: user.schoolIds } },
+    select: { id: true }
+  });
+  const classIds = classes.map(c => c.id);
 
-  // 4. plan do DB
+  const clsSubs = await prisma.classSubject.findMany({
+    where: { classId: { in: classIds } },
+    select: { classId: true, subjectId: true, hours: true }
+  });
+  const subjectsMap = {};
+  clsSubs.forEach(({ classId, subjectId, hours }) => {
+    subjectsMap[classId] = subjectsMap[classId] || {};
+    subjectsMap[classId][subjectId] = hours;
+  });
 
-  throw new Error('generateTimetable: niedokończone (brakuje implementacji seed/mapping)');
+  const tchSubs = await prisma.teacherSubject.findMany({
+    where: { teacher: { schoolId: { in: user.schoolIds } } },
+    select: { teacherId: true, subjectId: true }
+  });
+  const teachersMap = {};
+  tchSubs.forEach(({ teacherId, subjectId }) => {
+    teachersMap[teacherId] = teachersMap[teacherId] || [];
+    teachersMap[teacherId].push(subjectId);
+  });
+
+  const entries = await solver.generateTimetable({
+    teachersMap,
+    classIds,
+    subjectsMap,
+    timeslots
+  });
+
+  const toCreate = entries.map(e => ({
+    classId:    e.classId,
+    subjectId:  e.subjectId,
+    timeslotId: e.timeslotId
+  }));
+  await prisma.timetableEntry.createMany({ data: toCreate });
+
+  return entries;
 }

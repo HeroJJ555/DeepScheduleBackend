@@ -121,3 +121,20 @@ model TimetableEntry {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
+
+model ClassSubject {
+  class     Class   @relation(fields: [classId], references: [id])
+  classId   Int
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId Int
+  hours     Int
+  @@id([classId, subjectId])
+}
+
+model TeacherSubject {
+  teacher    Teacher @relation(fields: [teacherId], references: [id])
+  teacherId  Int
+  subject    Subject @relation(fields: [subjectId], references: [id])
+  subjectId  Int
+  @@id([teacherId, subjectId])
+}

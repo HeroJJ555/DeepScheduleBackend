@@ -1,68 +1,66 @@
 import GLPK from 'glpk.js';
 
 /**
- * 
- * @returns {Promise<GLPK>} glpk 
+ * @returns {Promise<any>}
  */
 export async function loadGLPK() {
   return await GLPK();
 }
 
 /**
- * @param {Object} teachers 
- * @param {string[]} classes
- * @param {Object} subjects 
- * @param {Object[]} timeslots  
- * @param {Object} glpk 
- * @returns {Object} 
+ * @param {Object<number, number[]>} teachersMap
+ * @param {number[]} classIds
+ * @param {Object<number, Object<number, number>>} subjectsMap  classId → { subjectId: hours }
+ * @param {{ id: number, day: number, hour: number }[]} timeslots
+ * @param {any} glpk 
+ * @returns {Object}
  */
-export function buildModel(teachers, classes, subjects, timeslots, glpk) {
+export function buildModel(teachersMap, classIds, subjectsMap, timeslots, glpk) {
   const binaries = [];
   const bounds = [];
-  const varName = (c, s, idx) => `x_${c}_${s}_${idx}`;
-
-  classes.forEach(c => {
-    Object.keys(subjects[c]).forEach(s => {
-      timeslots.forEach((_, idx) => {
-        binaries.push(varName(c, s, idx));
-        bounds.push({
-          name: varName(c, s, idx),
-          type: glpk.GLP_DB,
-          lb: 0,
-          ub: 1
-        });
-      });
-    });
-  });
-
   const subjectTo = [];
+  const varName = (cls, subj, tsIdx) => `x_${cls}_${subj}_${tsIdx}`;
 
-  classes.forEach(c => {
-    Object.entries(subjects[c]).forEach(([s, hours]) => {
-      const coefs = {};
-      timeslots.forEach((_, idx) => {
-        coefs[varName(c, s, idx)] = 1;
-      });
-      subjectTo.push({
-        name: `class_${c}_${s}`,
-        vars: Object.entries(coefs).map(([name, coef]) => ({ name, coef })),
-        bnds: { type: glpk.GLP_FX, lb: hours, ub: hours }
+  classIds.forEach(cls => {
+    const need = subjectsMap[cls] || {};
+    Object.keys(need).forEach(subjKey => {
+      const subj = Number(subjKey);
+      timeslots.forEach((_, tsIdx) => {
+        const name = varName(cls, subj, tsIdx);
+        binaries.push(name);
+        bounds.push({ name, type: glpk.GLP_DB, lb: 0, ub: 1 });
       });
     });
   });
 
-  Object.entries(teachers).forEach(([t, teaches]) => {
-    timeslots.forEach((_, idx) => {
-      const coefs = {};
-      classes.forEach(c => {
-        teaches.forEach(s => {
-          const name = varName(c, s, idx);
-          coefs[name] = (coefs[name] || 0) + 1;
+  classIds.forEach(cls => {
+    const need = subjectsMap[cls] || {};
+    Object.entries(need).forEach(([subjKey, hrs]) => {
+      const subj = Number(subjKey);
+      const coefs = timeslots.map((_, tsIdx) => ({
+        name: varName(cls, subj, tsIdx),
+        coef: 1
+      }));
+      subjectTo.push({
+        name: `class_${cls}_subj_${subj}`,
+        vars: coefs,
+        bnds: { type: glpk.GLP_FX, lb: hrs, ub: hrs }
+      });
+    });
+  });
+
+  Object.entries(teachersMap).forEach(([tKey, canTeach]) => {
+    const teacherId = Number(tKey);
+    timeslots.forEach((_, tsIdx) => {
+      const coefs = [];
+      classIds.forEach(cls => {
+        canTeach.forEach(subj => {
+          coefs.push({ name: varName(cls, subj, tsIdx), coef: 1 });
         });
       });
       subjectTo.push({
-        name: `teacher_${t}_${idx}`,
-        vars: Object.entries(coefs).map(([name, coef]) => ({ name, coef })),
+        name: `teacher_${teacherId}_ts_${tsIdx}`,
+        vars: coefs,
         bnds: { type: glpk.GLP_UP, ub: 1 }
       });
     });
@@ -70,11 +68,7 @@ export function buildModel(teachers, classes, subjects, timeslots, glpk) {
 
   return {
     name: 'timetable',
-    objective: {
-      direction: glpk.GLP_MIN,
-      name: 'obj',
-      vars: [] 
-    },
+    objective: { direction: glpk.GLP_MIN, name: 'obj', vars: [] },
     subjectTo,
     binaries,
     bounds
@@ -82,47 +76,49 @@ export function buildModel(teachers, classes, subjects, timeslots, glpk) {
 }
 
 /**
- * @param {Object} model 
- * @param {Object} glpk 
- * @param {Object} [options] 
- * @returns {Object} 
+ * @param {Object} model
+ * @param {any}     glpk
+ * @param {Object} [options]
  */
 export function solveModel(model, glpk, options = {}) {
   return glpk.solve(model, options);
 }
 
 /**
- * @param {Object} vars 
- * @param {Object[]} timeslots 
- * @returns {Object}
+ *
+ * @param {Object<string, number>} vars
+ * @param {{ id: number }[]}       timeslots
+ * @returns {{ classId: number, subjectId: number, timeslotId: number }[]}
  */
 export function parseSolution(vars, timeslots) {
-  const timetable = {};
+  const entries = [];
   for (const [name, val] of Object.entries(vars)) {
     if (val === 1) {
-      const [, cls, subj, idxStr] = name.split('_');
-      const slot = timeslots[+idxStr];
-      timetable[cls] = timetable[cls] || [];
-      timetable[cls].push({
-        day: slot.day,
-        hour: slot.hour,
-        subject: subj
+      const [, cls, subj, idx] = name.split('_');
+      entries.push({
+        classId:   Number(cls),
+        subjectId: Number(subj),
+        timeslotId: timeslots[Number(idx)].id
       });
     }
   }
-  return timetable;
+  return entries;
 }
 
 /**
+ *
  * @param {Object} input
- * @returns {Promise<Object>}
+ *   - teachersMap: { [teacherId]: [subjectId,…] }
+ *   - classIds:    number[]
+ *   - subjectsMap: { [classId]: { [subjectId]: hours } }
+ *   - timeslots:   Array<{ id, day, hour }>
  */
 export async function generateTimetable(input) {
-  const { teachers, classes, subjects, timeslots } = input;
+  const { teachersMap, classIds, subjectsMap, timeslots } = input;
   const glpk = await loadGLPK();
-  const model = buildModel(teachers, classes, subjects, timeslots, glpk);
+  const model = buildModel(teachersMap, classIds, subjectsMap, timeslots, glpk);
   const result = solveModel(model, glpk, { msglev: glpk.GLP_MSG_OFF });
-  if (result.result.status !== glpk.GLP_OPT) {
+  if (![glpk.GLP_OPT, glpk.GLP_FEASIBLE].includes(result.result.status)) {
     throw new Error('Nie znaleziono pasującego planu lekcji');
   }
   return parseSolution(result.result.vars, timeslots);
