@@ -7,6 +7,9 @@
   "directories": {
     "test": "tests"
   },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
   "scripts": {
     "start": "node src/server.js",
     "test": "jest"
@@ -23,13 +26,18 @@
   },
   "homepage": "https://github.com/HeroJJ555/DeepScheduleBackend#readme",
   "dependencies": {
+    "@prisma/client": "^6.6.0",
     "ajv": "^8.17.1",
     "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "glpk.js": "^4.0.2",
+    "jsonwebtoken": "^9.0.2",
     "path": "^0.12.7"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "prisma": "^6.6.0"
   }
 }

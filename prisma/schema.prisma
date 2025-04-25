@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum SchoolRole {
+  ADMIN
+  TEACHER
+}
+
+model User {
+  id        Int            @id @default(autoincrement())
+  email     String         @unique
+  password  String
+  name      String
+  role      Role           @default(USER)
+  schools   SchoolOnUser[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model School {
+  id        Int            @id @default(autoincrement())
+  name      String
+  address   String?
+  city      String?
+  users     SchoolOnUser[]
+  teachers  Teacher[]
+  subjects  Subject[]
+  classes   Class[]
+  rooms     Room[]
+  timeslots TimeSlot[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model SchoolOnUser {
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  school    School   @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  role      SchoolRole @default(TEACHER)
+
+  @@id([userId, schoolId])
+}
+
+model Teacher {
+  id        Int            @id @default(autoincrement())
+  name      String
+  email     String?
+  school    School         @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  entries   TimetableEntry[]
+}
+
+model Subject {
+  id        Int            @id @default(autoincrement())
+  name      String
+  school    School         @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  entries   TimetableEntry[]
+}
+
+model Class {
+  id        Int            @id @default(autoincrement())
+  name      String
+  school    School         @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  entries   TimetableEntry[]
+}
+
+model Room {
+  id        Int            @id @default(autoincrement())
+  name      String
+  capacity  Int?
+  school    School         @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  entries   TimetableEntry[]
+}
+
+model TimeSlot {
+  id        Int            @id @default(autoincrement())
+  day       Int
+  hour      Int
+  school    School         @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  entries   TimetableEntry[]
+}
+
+model TimetableEntry {
+  id          Int        @id @default(autoincrement())
+  class       Class      @relation(fields: [classId], references: [id])
+  classId     Int
+  subject     Subject    @relation(fields: [subjectId], references: [id])
+  subjectId   Int
+  teacher     Teacher?   @relation(fields: [teacherId], references: [id])
+  teacherId   Int?
+  timeslot    TimeSlot   @relation(fields: [timeslotId], references: [id])
+  timeslotId  Int
+  room        Room?      @relation(fields: [roomId], references: [id])
+  roomId      Int?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
