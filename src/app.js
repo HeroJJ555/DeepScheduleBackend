@@ -4,13 +4,13 @@ import bodyParser from 'body-parser';
 
 import authRouter from './routes/auth.js';
 import usersRouter from './routes/users.js';
-import schoolsRouter from './routes/schools.js';
+/*import schoolsRouter from './routes/schools.js';
 import teacherRouter from './routes/teachers.js';
-import classRouter from './routes/classes.js';
+import classRouter from './routes/classes.js';s
 import roomRouter from './routes/rooms.js';
 import timeslotRouter from './routes/timeslots.js';
 import timetableRouter from './routes/timetable.js';
-import entriesRouter from './routes/entries.js';
+import entriesRouter from './routes/entries.js';*/
 
 import authMiddleware from './middleware/auth.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -26,13 +26,13 @@ app.use('/auth', authRouter);
 app.use(authMiddleware);
 
 app.use('/users', usersRouter);
-app.use('/schools', schoolsRouter);
+/*app.use('/schools', schoolsRouter);
 app.use('/schools', teacherRouter);
 app.use('/schools', classRouter);
 app.use('/schools', roomRouter);
 app.use('/schools', timeslotRouter);
 app.use('/', timetableRouter);
-app.use('/', entriesRouter);
+app.use('/', entriesRouter);*/
 
 // global error handler
 app.use(errorHandler);
