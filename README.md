@@ -97,7 +97,10 @@
 | POST   | `/generate`                    | Wygeneruj plan na podstawie danych w bazie           | — (używa seed i genera­tor) |
 | GET    | `/timetable`                   | Pobierz zapisany, ostatnio wygenerowany plan         | —                        |
 | DELETE | `/timetable`                   | Wyczyść wszystkie wpisy planu (np. przed kolejnym run)| —                       |
-
+| GET | `/timetable/entries` | Zwraca listę aktualnych planów | —
+| POST | `/timetable/entries` | Pozwala dodać nową lekcję ręcznie | —
+| PUT | `/timetable/entries/:entryId` | Korekty ręczne | —
+| DELETE | `/timetable/entries/:entryId` | Usuwa wpis | —
 ### Role i dostęp
 
 - Każde żądanie **z autoryzacją** sprawdza JWT i pobiera `user.schoolId[]`  
