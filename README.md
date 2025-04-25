@@ -1,112 +1,213 @@
-# DeepSchedule Backend (Node.js + AI)
+# DeepScheduleBackend
 
-> **Dokumentacja i changelog**
-
----
-
-# Spis treści
-## 1. Endpointy
-
---
-
-# 1. Endpointy
-
-## BEZ AUTORYZACJI
-
-> **Publiczne operacje uwierzytelniania i przywracania hasła**
-
-| Metoda | Ścieżka                         | Opis                                                                              | Body / Query                                                         |
-|--------|---------------------------------|-----------------------------------------------------------------------------------|----------------------------------------------------------------------|
-| POST   | `/auth/register`                | Rejestracja nowego konta (zakłada szkołę lub przypisanie do istniejącej)         | `{ email, password, name, schoolId? }`                               |
-| POST   | `/auth/login`                   | Logowanie — zwraca JWT                                                            | `{ email, password }`                                                |
-| POST   | `/auth/password-reset/request`  | Prośba o link/reset hasła — wysyła e-mail z tokenem                                | `{ email }`                                                          |
-| POST   | `/auth/password-reset/confirm`  | Potwierdzenie nowego hasła za pomocą tokenu                                        | `{ token, newPassword }`                                             |
-| GET    | `/health`                       | Prosta weryfikacja „alive” serwera                                                 | —                                                                    |
+Backend **DeepSchedule** — system automatycznego i ręcznego układania planów lekcji.  
+Opiera się na Node.js (ESM), Express, Prisma (SQLite) i solverze GLPK.js (WASM).
 
 ---
 
-## Z AUTORYZACJĄ
+## Spis treści
 
-> **Wszystkie poniższe żądania wymagają nagłówka**  
-> `Authorization: Bearer <JWT>`
+- [Funkcjonalność](#funkcjonalność)  
+- [Technologie](#technologie)  
+- [Instalacja i uruchomienie](#uruchomienie)  
+- [Struktura projektu](#struktura-projektu)  
+- [Zmienne środowiskowe](#zmienne-środowiskowe)  
+- [Baza danych (Prisma)](#baza-danych-prisma)  
+- [API — lista endpointów](#api--lista-endpointów)  
+  - [Publiczne (bez JWT)](#publiczne-bez-jwt)  
+  - [Zabezpieczone (z JWT)](#zabezpieczone-z-jwt)  
+- [Solver (GLPK.js)](#solver-glpkjs)  
+- [Frontend](#frontend)  
+- [Możliwe usprawnienia](#możliwe-usprawnienia)  
 
-### Użytkownik (`/users`)
+---
 
-| Metoda | Ścieżka                 | Opis                                                     | Body / Query                  |
-|--------|-------------------------|----------------------------------------------------------|-------------------------------|
-| GET    | `/users/me`             | Pobierz dane zalogowanego użytkownika                    | —                             |
-| PUT    | `/users/me`             | Edycja własnego profilu (np. zmiana hasła, nazwy)        | `{ name?, password? }`        |
-| POST   | `/users/invite`         | Zaproś użytkownika do placówki (wysyła e-mail z linkiem) | `{ email, role, schoolId }`   |
+## Funkcjonalność
 
-### Szkoły (`/schools`)
+1. **Rejestracja, logowanie, reset hasła**  
+2. **CRUD** dla:
+   - użytkowników (`/users`),  
+   - szkół (`/schools`),  
+   - nauczycieli (`/teachers`),  
+   - klas (`/classes`),  
+   - sal (`/rooms`),  
+   - slotów godzinowych (`/timeslots`),  
+3. **Generowanie planu** (`/generate`) i **pobieranie** (`/timetable`),  
+4. **Manualne poprawki** wpisów planu (`/entries`).  
 
-| Metoda | Ścieżka               | Opis                                                  | Body / Query                     |
-|--------|-----------------------|-------------------------------------------------------|----------------------------------|
-| GET    | `/schools`            | Lista wszystkich placówek dostępnych dla konta        | `?page=&limit=`                  |
-| POST   | `/schools`            | Utwórz nową placówkę                                  | `{ name, address, city, ... }`   |
-| GET    | `/schools/:id`        | Pobierz szczegóły wybranej placówki                   | —                                |
-| PUT    | `/schools/:id`        | Edytuj dane placówki                                  | `{ name?, address?, ... }`       |
-| DELETE | `/schools/:id`        | Usuń placówkę (lub deaktywuj)                         | —                                |
+---
+
+## Technologie
+
+- **Node.js** (v18+), **ES Modules**  
+- **Express** — serwer HTTP  
+- **Prisma** + SQLite — ORM i baza  
+- **GLPK.js** (WASM) — solver CP-SAT  
+- **AJV** + `ajv-formats` — walidacja JSON  
+- **bcrypt**, **jsonwebtoken** — uwierzytelnianie  
+- **jest**, **supertest** (opcjonalnie) — testy  
+
+---
+
+## Uruchomienie
+   Domyślnie nasłuchuje:  
+   ```
+   http://localhost:3000
+   ```
+
+---
+
+## Struktura projektu
+
+```
+├── .env
+├── prisma/
+│   └── schema.prisma       # modele i relacje
+├── src/
+│   ├── config/
+│   │   └── index.js        # .env → config
+│   ├── db.js               # inicjalizacja Prisma Client
+│   ├── app.js              # Express + middleware + routes
+│   ├── server.js           # punkt wejścia + statyczne pliki
+│   ├── solver.js           # GLPK.js solver
+│   ├── middleware/
+│   │   ├── auth.js         # JWT
+│   │   ├── errorHandler.js # globalny error handler
+│   │   └── validateSchema.js # AJV
+│   ├── utils/
+│   │   ├── logger.js       # console wrapper
+│   │   ├── email.js        # stub mailer
+│   │   └── schemaDefs.js   # JSON-schemy
+│   ├── routes/             # express.Router dla zasobów
+│   ├── controllers/        # HTTP → services
+│   └── services/           # logika biznesowa + DB + solver
+└── frontend/               # statyczne UI (jeśli serwowane)
+```
+
+---
+
+## Zmienne środowiskowe
+
+W pliku `.env`:
+
+```dotenv
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="długi_bezpieczny_secret"
+PORT=3000
+```
+
+---
+
+## Baza danych (Prisma)
+
+Modele w `prisma/schema.prisma`:
+
+- **User**, **School**, **Teacher**, **Class**, **Room**, **TimeSlot**, **TimetableEntry**  
+- **SchoolOnUser** (n:m User↔School)  
+- **ClassSubject** (n:m Class↔Subject + liczba godzin)  
+- **TeacherSubject** (n:m Teacher↔Subject)  
+
+Każdy relacyjny model ma pole odwrotne np. `Class -> classSubjects`, `Subject -> classSubjects, teacherSubjects`.
+
+---
+
+## API — lista endpointów
+
+### Publiczne (bez JWT)
+
+| Metoda | Ścieżka                          | Opis                                      |
+|--------|----------------------------------|-------------------------------------------|
+| POST   | `/auth/register`                 | Rejestracja (`{email,password,name}`)     |
+| POST   | `/auth/login`                    | Logowanie (`{email,password}`) → JWT      |
+| POST   | `/auth/password-reset/request`   | Prośba o reset (`{email}`)                |
+| POST   | `/auth/password-reset/confirm`   | Reset hasła (`{token,newPassword}`)       |
+| GET    | `/health`                        | „Alive” check                             |
+
+### Zabezpieczone (z JWT; `Authorization: Bearer <token>`)
+
+#### Użytkownik `/users`
+
+| Metoda | Ścieżka            | Opis                                 | Body                         |
+|--------|--------------------|--------------------------------------|------------------------------|
+| GET    | `/users/me`        | Pobierz własne dane                  | —                            |
+| PUT    | `/users/me`        | Edycja nazwy i/lub hasła             | `{name?,password?}`          |
+| POST   | `/users/invite`    | Zaproś do szkoły                     | `{email,role,schoolId}`      |
+
+#### Szkoły `/schools`
+
+| Metoda | Ścieżka            | Opis                     | Body `{name,address?,city?}` |
+|--------|--------------------|--------------------------|------------------------------|
+| GET    | `/schools`         | Lista dostępnych szkół   | —                            |
+| POST   | `/schools`         | Nowa szkoła              | —                            |
+| GET    | `/schools/:id`     | Szczegóły                | —                            |
+| PUT    | `/schools/:id`     | Edycja                   | —                            |
+| DELETE | `/schools/:id`     | Usuń                      | —                            |
+
+#### Nauczyciele `/schools/:schoolId/teachers` & `/teachers/:teacherId`
+
+CRUD nauczycieli w danej szkole.
+
+#### Klasy `/schools/:schoolId/classes` & `/classes/:classId`
+
+CRUD klas.
+
+#### Sale `/schools/:schoolId/rooms` & `/rooms/:roomId`
+
+CRUD sal.
+
+#### Sloty `/schools/:schoolId/timeslots` & `/timeslots/:timeslotId`
+
+CRUD slotów.
+
+#### Plan lekcji
+
+| Metoda | Ścieżka        | Opis                            | Body         |
+|--------|----------------|---------------------------------|--------------|
+| POST   | `/generate`    | Generuje i zapisuje plan        | —            |
+| GET    | `/timetable`   | Pobiera ostatni zapisany plan   | —            |
+| DELETE | `/timetable`   | Czyści wszystkie wpisy planu    | —            |
+
+#### Manualne wpisy `/entries`
+
+| Metoda | Ścieżka                 | Opis                                    | Body                                   |
+|--------|-------------------------|-----------------------------------------|----------------------------------------|
+| GET    | `/entries`              | Lista wszystkich wpisów planu           | —                                      |
+| POST   | `/entries`              | Dodaj jeden wpis                        | `{classId,subjectId,timeslotId,roomId?,teacherId?}` |
+| PUT    | `/entries/:entryId`     | Edytuj wpis                             | dowolne pola z powyższego               |
+| DELETE | `/entries/:entryId`     | Usuń wpis                               | —                                      |
+
+---
+
+## Solver (GLPK.js)
+
+- **Wejście** (`generateTimetable`):
+  ```js
+  {
+    teachersMap: { [teacherId]: [subjectId,…] },
+    classIds:    [classId,…],
+    subjectsMap: { [classId]: { [subjectId]: hours } },
+    timeslots:   [ {id,day,hour}, … ]
+  }
+  ```
+- **buildModel**: zmienne binarne, constraints:
+  - każda klasa ma dokładnie `hours` lekcji z `subject`,
+  - każdy nauczyciel max 1 lekcja/slot.
+- **solveModel** → GLPK CP-SAT.
+- **parseSolution** → tablica `{classId,subjectId,timeslotId}`.
+
+---
+
+## Frontend
+
+- TODO...
+
+---
+
+## Możliwe usprawnienia
+
+- **Optymalizacja** solvera (funkcja celu, block scheduling).  
+- **Roles & permissions** rozszerzone (np. dyrektor vs nauczyciel).  
+- **Webhooki / powiadomienia** (np. e-mail, Slack).  
 
 
-### Nauczyciele (`/teachers`)
-
-> **Scoped by school**: każdy użytkownik widzi tylko swoich nauczycieli.
-
-| Metoda | Ścieżka                              | Opis                                   | Body / Query                              |
-|--------|--------------------------------------|----------------------------------------|-------------------------------------------|
-| GET    | `/schools/:schoolId/teachers`        | Lista nauczycieli w placówce           | `?page=&limit=&search=`                   |
-| POST   | `/schools/:schoolId/teachers`        | Dodaj nowego nauczyciela               | `{ name, email?, subjects: [subjectId] }` |
-| GET    | `/teachers/:teacherId`               | Szczegóły nauczyciela                  | —                                         |
-| PUT    | `/teachers/:teacherId`               | Edytuj dane nauczyciela                | `{ name?, subjects? }`                    |
-| DELETE | `/teachers/:teacherId`               | Usuń (lub deaktywuj) nauczyciela       | —                                         |
-
-
-### Klasy (`/classes`)
-
-| Metoda | Ścieżka                           | Opis                                   | Body / Query                                |
-|--------|-----------------------------------|----------------------------------------|---------------------------------------------|
-| GET    | `/schools/:schoolId/classes`      | Lista klas w placówce                  | `?page=&limit=&search=`                     |
-| POST   | `/schools/:schoolId/classes`      | Dodaj nową klasę                       | `{ name, subjects: [{ subjectId, hours }] }`|
-| GET    | `/classes/:classId`               | Szczegóły klasy                        | —                                           |
-| PUT    | `/classes/:classId`               | Edytuj dane klasy                      | `{ name?, subjects? }`                      |
-| DELETE | `/classes/:classId`               | Usuń (lub deaktywuj) klasę             | —                                           |
-
-### Sale (`/rooms`)
-
-| Metoda | Ścieżka                           | Opis                                   | Body / Query                    |
-|--------|-----------------------------------|----------------------------------------|---------------------------------|
-| GET    | `/schools/:schoolId/rooms`        | Lista sal w placówce                   | `?page=&limit=&search=`         |
-| POST   | `/schools/:schoolId/rooms`        | Dodaj nową salę                        | `{ name, capacity? }`           |
-| GET    | `/rooms/:roomId`                  | Szczegóły sali                         | —                               |
-| PUT    | `/rooms/:roomId`                  | Edytuj dane sali                       | `{ name?, capacity? }`          |
-| DELETE | `/rooms/:roomId`                  | Usuń (lub deaktywuj) salę              | —                               |
-
-### Terminy (`/timeslots`)
-
-| Metoda | Ścieżka                                 | Opis                                 | Body / Query              |
-|--------|-----------------------------------------|--------------------------------------|---------------------------|
-| GET    | `/schools/:schoolId/timeslots`          | Lista dostępnych slotów godzinowych  | —                         |
-| POST   | `/schools/:schoolId/timeslots`          | Dodaj nowy slot (dzień, godzina)     | `{ day, hour }`           |
-| DELETE | `/timeslots/:timeslotId`                | Usuń (lub wyłącz) slot               | —                         |
-
-### Plan lekcji (`/timetable`)
-
-| Metoda | Ścieżka                        | Opis                                                 | Body / Query             |
-|--------|--------------------------------|------------------------------------------------------|--------------------------|
-| POST   | `/generate`                    | Wygeneruj plan na podstawie danych w bazie           | — (używa seed i genera­tor) |
-| GET    | `/timetable`                   | Pobierz zapisany, ostatnio wygenerowany plan         | —                        |
-| DELETE | `/timetable`                   | Wyczyść wszystkie wpisy planu (np. przed kolejnym run)| —                       |
-| GET | `/timetable/entries` | Zwraca listę aktualnych planów | —
-| POST | `/timetable/entries` | Pozwala dodać nową lekcję ręcznie | —
-| PUT | `/timetable/entries/:entryId` | Korekty ręczne | —
-| DELETE | `/timetable/entries/:entryId` | Usuwa wpis | —
-### Role i dostęp
-
-- Każde żądanie **z autoryzacją** sprawdza JWT i pobiera `user.schoolId[]`  
-- **Scoped resources**:  
-  - Dostęp do `/schools/:id/*` jest dozwolony tylko, jeśli `:id` należy do `user.schoolId[]`.  
-  - Przy CRUD na teacher/class/room/timeslot sprawdzamy przynależność do tej samej szkoły.  
-
-
-*Kiedyś zrobię*
+_Created by DeepSchedule Team (JJ & WA)_  
