@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
-import axios from 'axios';
+import useAuth from './useAuth';
 import './Auth.css';
 
 export default function RegisterPage() {
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail]     = useState('');
@@ -17,10 +18,8 @@ export default function RegisterPage() {
     setError('');
     setSuccess('');
     try {
-      await axios.post('/api/auth/register', { email, password, name });
-      setSuccess('Rejestracja udana! Teraz się zaloguj.');
-      setEmail(''); setPassword(''); setName('');
-      // navigate('/login');
+      await register(email, password, name);
+      navigate('/panel');
     } catch (err) {
       setError(err.response?.data?.error || 'Błąd rejestracji');
     }
