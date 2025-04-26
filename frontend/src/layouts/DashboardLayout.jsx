@@ -1,116 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import './DashboardLayout.css';
 
 export default function DashboardLayout() {
   const [schools, setSchools] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSchoolId, setSelectedSchoolId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/schools').then(res => {
       setSchools(res.data);
       setLoading(false);
-      if (res.data.length > 0) {
-        setSelectedSchoolId(res.data[0].id);
-      }
     });
   }, []);
-
-  const handleSchoolChange = e => {
-    const id = Number(e.target.value);
-    setSelectedSchoolId(id);
-    navigate(`/schools/${id}/classes`);
-  };
 
   return (
     <div className="ds-dashboard">
       <aside className="ds-sidebar">
-        {/* Fala SVG */}
-        <div className="ds-sidebar-wave">
-          <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-            <path
-              fill="#1f1f3f"
-              d="M0,32 C360,80 1080,0 1440,48 L1440,0 L0,0 Z"
-            />
-          </svg>
+        {/* Sekcja Szkoły */}
+        <div className="ds-sidebar-section">
+          <h4 className="ds-section-title">Szkoły</h4>
+          <button
+            className="ds-btn-new"
+            onClick={() => navigate('/panel/schools/new')}
+          >
+            <i className="fa-solid fa-plus"></i>
+            Utwórz szkołę
+          </button>
+          {loading ? (
+            <p className="ds-loading">Ładowanie…</p>
+          ) : schools.length === 0 ? (
+            <p className="ds-empty">Brak szkół</p>
+          ) : (
+            <nav className="ds-school-list">
+              {schools.map(s => (
+                <NavLink
+                  to={`/schools/${s.id}/classes`}
+                  key={s.id}
+                  className="ds-nav-link"
+                >
+                  <i className="fa-solid fa-school"></i>
+                  {s.name}
+                </NavLink>
+              ))}
+            </nav>
+          )}
         </div>
 
-        {loading ? (
-          <p className="ds-loading">Ładowanie szkół…</p>
-        ) : schools.length === 0 ? (
-          <div className="ds-no-schools">
-            <p>Nie masz jeszcze żadnej szkoły.</p>
-            <button
-              className="ds-btn-primary"
-              onClick={() => navigate('/schools')}
-            >
-              Utwórz szkołę
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="ds-school-select-wrapper">
-              <i className="fa-solid fa-school ds-school-icon"></i>
-              <select
-                id="ds-school-select"
-                className="ds-school-select"
-                value={selectedSchoolId}
-                onChange={handleSchoolChange}
-              >
-                {schools.map(s => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <nav className="ds-sidebar-nav">
-              <NavLink
-                to={`/schools/${selectedSchoolId}/classes`}
-                className="ds-nav-link"
-              >
-                <i className="fa-solid fa-chalkboard-user"></i>
-                Klasy
-              </NavLink>
-              <NavLink
-                to={`/schools/${selectedSchoolId}/teachers`}
-                className="ds-nav-link"
-              >
-                <i className="fa-solid fa-user-tie"></i>
-                Nauczyciele
-              </NavLink>
-              <NavLink
-                to={`/schools/${selectedSchoolId}/rooms`}
-                className="ds-nav-link"
-              >
-                <i className="fa-solid fa-door-open"></i>
-                Sale
-              </NavLink>
-              <NavLink
-                to={`/schools/${selectedSchoolId}/timeslots`}
-                className="ds-nav-link"
-              >
-                <i className="fa-solid fa-clock"></i>
-                Sloty
-              </NavLink>
-              <button
-                className="ds-nav-action"
-                onClick={() => navigate('/generate')}
-              >
-                <i className="fa-solid fa-gear"></i>
-                Generuj plan
-              </button>
-              <NavLink to="/timetable" className="ds-nav-link">
-                <i className="fa-solid fa-calendar-alt"></i>
-                Zobacz plan
-              </NavLink>
-            </nav>
-          </>
-        )}
+        {/* Inne linki panelu */}
+        <div className="ds-sidebar-section">
+          <h4 className="ds-section-title">Panel</h4>
+          <NavLink to="/panel/profile" className="ds-nav-link">
+            <i className="fa-solid fa-user-circle"></i> Profil
+          </NavLink>
+          <NavLink to="/panel/announcements" className="ds-nav-link">
+            <i className="fa-solid fa-bullhorn"></i> Ogłoszenia
+          </NavLink>
+          <NavLink to="/panel/changelog" className="ds-nav-link">
+            <i className="fa-solid fa-list"></i> ChangeLog
+          </NavLink>
+          <NavLink to="/wiki" className="ds-nav-link">
+            <i className="fa-solid fa-book-open"></i> Wiki
+          </NavLink>
+          <NavLink to="/support" className="ds-nav-link">
+            <i className="fa-solid fa-headset"></i> Support
+          </NavLink>
+        </div>
       </aside>
 
       <main className="ds-dashboard-content">

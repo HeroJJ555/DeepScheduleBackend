@@ -10,7 +10,8 @@ import ProfilePage from "../features/profile/ProfilePage";
 import AnnouncementsPage from "../features/announcements/AnnouncementsPage";
 import ChangeLogPage from "../features/changelog/ChangeLogPage";
 import WikiPage from "../features/wiki/WikiPage";
-import SchoolsPage from '../features/schools/SchoolsPage';
+import CreateSchoolPage from "../features/schools/CreateSchoolPage";
+import SchoolsPage from "../features/schools/SchoolsPage";
 import SupportPage from "../features/support/SupportPage";
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -33,6 +34,8 @@ export default function AppRoutes() {
           <Route path="/panel/announcements" element={<AnnouncementsPage />} />
           <Route path="/panel/changelog" element={<ChangeLogPage />} />
           <Route path="/schools" element={<SchoolsPage />} />
+          <Route path="/panel/schools" element={<SchoolsPage />} />
+          <Route path="/panel/schools/new" element={<CreateSchoolPage />} />
         </Route>
       </Route>
 
