@@ -5,7 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // wszystkie /api/* pójdą na backend z usuniętym /api
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
