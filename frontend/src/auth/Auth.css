@@ -1,3 +1,4 @@
+/* wspólne style dla LoginPage i RegisterPage */
 .auth-container {
     display: flex;
     justify-content: center;
