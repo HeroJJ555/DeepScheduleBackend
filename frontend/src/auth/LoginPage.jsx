@@ -16,7 +16,7 @@ import React, { useState } from 'react';
      setError('');
      try {
        await login(email, password);
-       navigate('/schools');
+       navigate('/panel');
      } catch (err) {
        setError(err.response?.data?.error || 'Błąd logowania');
      }
