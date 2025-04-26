@@ -13,6 +13,11 @@ import WikiPage from "../features/wiki/WikiPage";
 import CreateSchoolPage from "../features/schools/CreateSchoolPage";
 import SchoolsPage from "../features/schools/SchoolsPage";
 import SupportPage from "../features/support/SupportPage";
+import ClassesPage from "../features/classes/ClassesPage";
+import TeachersPage from "../features/teachers/TeachersPage";
+import RoomsPage from "../features/rooms/RoomsPage";
+import GeneratePage from "../features/timetable/GeneratePage";
+import TimetableView from "../features/timetable/TimetableView";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 
@@ -36,6 +41,24 @@ export default function AppRoutes() {
           <Route path="/schools" element={<SchoolsPage />} />
           <Route path="/panel/schools" element={<SchoolsPage />} />
           <Route path="/panel/schools/new" element={<CreateSchoolPage />} />
+          <Route
+            path="/panel/schools/:schoolId/classes"
+            element={<ClassesPage />}
+          />
+          <Route
+            path="/panel/schools/:schoolId/classes"
+            element={<ClassesPage />}
+          />
+          <Route
+            path="/panel/schools/:schoolId/teachers"
+            element={<TeachersPage />}
+          />
+          <Route
+            path="/panel/schools/:schoolId/rooms"
+            element={<RoomsPage />}
+          />
+          <Route path="/generate" element={<GeneratePage />} />
+          <Route path="/timetable" element={<TimetableView />} />
         </Route>
       </Route>
 

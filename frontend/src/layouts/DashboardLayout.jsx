@@ -36,7 +36,7 @@ export default function DashboardLayout() {
             <nav className="ds-school-list">
               {schools.map(s => (
                 <NavLink
-                  to={`/schools/${s.id}/classes`}
+                  to={`/panel/schools/${s.id}/classes`}
                   key={s.id}
                   className="ds-nav-link"
                 >
