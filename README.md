@@ -28,9 +28,6 @@ ______                _____      _              _       _
     
 > **Automatyczne i ręczne układanie planów lekcji** • Express • Prisma • React • GLPK.js
 
-
-# KOREK
-
 ---
 
 ## 📁 Struktura
