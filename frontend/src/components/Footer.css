@@ -52,7 +52,7 @@
     opacity: 0.8;
   }
   
-  /*     fade-in i slide-up */
+  /*fade-in i slide-up */
   @keyframes fadeInUp {
     from {
       opacity: 0;
