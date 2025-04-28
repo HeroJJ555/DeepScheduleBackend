@@ -13,6 +13,7 @@ import WikiPage from "../features/wiki/WikiPage";
 import CreateSchoolPage from "../features/schools/CreateSchoolPage";
 import SchoolsPage from "../features/schools/SchoolsPage";
 import SupportPage from "../features/support/SupportPage";
+import SchoolDashboardPage from '../features/schools/SchoolDashboardPage';
 import ClassesPage from "../features/classes/ClassesPage";
 import TeachersPage from "../features/teachers/TeachersPage";
 import RoomsPage from "../features/rooms/RoomsPage";
@@ -38,25 +39,18 @@ export default function AppRoutes() {
           <Route path="/panel/profile" element={<ProfilePage />} />
           <Route path="/panel/announcements" element={<AnnouncementsPage />} />
           <Route path="/panel/changelog" element={<ChangeLogPage />} />
-          <Route path="/schools" element={<SchoolsPage />} />
           <Route path="/panel/schools" element={<SchoolsPage />} />
           <Route path="/panel/schools/new" element={<CreateSchoolPage />} />
           <Route
-            path="/panel/schools/:schoolId/classes"
-            element={<ClassesPage />}
-          />
-          <Route
-            path="/panel/schools/:schoolId/classes"
-            element={<ClassesPage />}
-          />
-          <Route
-            path="/panel/schools/:schoolId/teachers"
-            element={<TeachersPage />}
-          />
-          <Route
-            path="/panel/schools/:schoolId/rooms"
-            element={<RoomsPage />}
-          />
+            path="/panel/schools/:schoolId"
+            element={<SchoolDashboardPage />}
+          >
+            <Route path="classes" element={<ClassesPage />} />
+            <Route path="teachers" element={<TeachersPage />} />
+            <Route path="rooms" element={<RoomsPage />} />
+            <Route path="generate" element={<GeneratePage />} />
+            <Route path="timetable" element={<TimetableView />} />
+          </Route>
           <Route path="/generate" element={<GeneratePage />} />
           <Route path="/timetable" element={<TimetableView />} />
         </Route>

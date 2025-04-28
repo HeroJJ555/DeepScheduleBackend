@@ -1,0 +1,37 @@
+.school-dashboard {
+    padding: 2rem;
+  }
+  
+  .school-dashboard h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .sd-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .sd-card {
+    background: #fff;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+  }
+  
+  .sd-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  
+  .sd-icon {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: .75rem;
+  }
+  

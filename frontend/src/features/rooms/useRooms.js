@@ -1,33 +1,59 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../api/client';
 
-export function useRooms() {
+/**
+ * Pobiera listę sal w danej szkole.
+ * @param {string|number} schoolId
+ */
+export function useRooms(schoolId) {
   return useQuery({
-    queryKey: ['rooms'],
-    queryFn: () => api.get('/rooms').then(res => res.data),
+    queryKey: ['rooms', schoolId],
+    queryFn: () =>
+      api.get(`/schools/${schoolId}/rooms`).then(res => res.data),
+    enabled: !!schoolId,
   });
 }
 
-export function useCreateRoom() {
+/**
+ * Tworzy nową salę w danej szkole.
+ * @param {string|number} schoolId
+ */
+export function useCreateRoom(schoolId) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: data => api.post('/rooms', data).then(res => res.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['rooms'] }),
+    mutationFn: data =>
+      api.post(`/schools/${schoolId}/rooms`, data).then(res => res.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['rooms', schoolId] });
+    },
   });
 }
 
-export function useUpdateRoom() {
+/**
+ * Aktualizuje salę po jej ID.
+ * @param {string|number} schoolId
+ */
+export function useUpdateRoom(schoolId) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: data => api.put(`/rooms/${data.id}`, data).then(res => res.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['rooms'] }),
+    mutationFn: data =>
+      api.put(`/rooms/${data.id}`, data).then(res => res.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['rooms', schoolId] });
+    },
   });
 }
 
-export function useDeleteRoom() {
+/**
+ * Usuwa salę o danym ID.
+ * @param {string|number} schoolId
+ */
+export function useDeleteRoom(schoolId) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: id => api.delete(`/rooms/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['rooms'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['rooms', schoolId] });
+    },
   });
 }
