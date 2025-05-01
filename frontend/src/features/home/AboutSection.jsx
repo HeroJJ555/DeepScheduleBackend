@@ -15,9 +15,9 @@ import React from 'react';
              ważne.
            </p>
            <p style={{ textAlign: 'left' }}>
-            Założona w 2025 roku przez Jana Jakubowskiego i Wiktora
-             Alischa firma DeepSchedule szybko zdobyła zaufanie szkół w całej
-             Polsce.
+              Założona w 2025 roku przez Jana Jakubowskiego i Wiktora
+              Alischa firma DeepSchedule szybko zdobyła zaufanie szkół w całej
+              Polsce.
            </p>
          </div>
          <div className="about-team">

@@ -16,7 +16,7 @@ import React from 'react';
            </a>
          </div>
          <div className="footer-info">
-           <p>© 2025 DeepSchedule. Wszelkie prawa zastrzeżone.</p>
+           <p style={{marginTop: "0.25rem"}}>© 2025 DeepSchedule. Wszelkie prawa zastrzeżone.</p>
            <p>Made with ♡ by Jan Jakubowski and Wiktor Alisch</p>
          </div>
        </div>

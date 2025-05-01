@@ -22,7 +22,7 @@
     overflow: hidden;
     background: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
+    transition: transform 0.3s;
   }
   
   .faq-item summary {

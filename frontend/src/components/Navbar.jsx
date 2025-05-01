@@ -38,7 +38,7 @@ import React from 'react';
              </li>
              <li>
                <button onClick={handleLogout} className="nav-link btn-logout">
-                 Logout
+                 Wyloguj
                </button>
              </li>
            </>

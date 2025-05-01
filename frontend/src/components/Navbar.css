@@ -24,7 +24,7 @@
   /* Logo po lewej */
   .navbar-brand .nav-logo {
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--nav-text);
     text-decoration: none;
     transition: color 0.3s;
@@ -48,7 +48,7 @@
     position: relative;
     color: var(--nav-text);
     font-weight: 500;
-    text-decoration: none;
+    text-decoration: none;  
     padding: 0.5rem 0;
     transition: color 0.3s;
   }
@@ -90,6 +90,7 @@
     color: var(--nav-text);
     cursor: pointer;
     font: inherit;
+    font-weight: 500;
     padding: 0.5rem 0;
     position: relative;
     transition: color 0.3s;
