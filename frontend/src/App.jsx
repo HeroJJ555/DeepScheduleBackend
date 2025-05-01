@@ -6,10 +6,12 @@ import './App.css';
 
 export default function App() {
   return (
-    <>
+    <div className="app-wrapper">
       <Navbar />
-      <AppRoutes />
+      <div className="app-content">
+        <AppRoutes />
+      </div>
       <Footer />
-    </>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 .footer {
     background: #111;
     color: #eee;
-    padding: 2rem 1rem;
+    padding: 2rem 1rem 1.25rem;
     text-align: center;
     animation: fadeInUp 0.8s ease-out both;
   }

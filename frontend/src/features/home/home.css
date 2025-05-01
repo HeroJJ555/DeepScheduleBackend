@@ -3,7 +3,7 @@
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
       url("/hero-bg.jpg") center/cover no-repeat;
     color: #ffffff;
-    padding: 6rem 2rem 2rem;
+    padding: 6rem 2rem 5rem;
     text-align: center;
     overflow: hidden;
   }
@@ -20,7 +20,7 @@
   
   .hero-content p {
     font-size: 1.25rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.25rem;
   }
   
   .hero-buttons {
@@ -58,8 +58,8 @@
     padding: 0.75rem 1.75rem;
     font-size: 1rem;
     font-weight: 600;
-    color: #667eea;
-    background: #e8f8ff;
+    color: #617ae7;
+    background: #e8f6fc;
     border: none;
     border-radius: 0.75rem;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
@@ -69,9 +69,9 @@
   }
   
   .btn-secondary:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    background-color: #a3b3c7;
+    background-color: #fafcff;
   }
   
   /* SVG fala */
@@ -95,7 +95,7 @@
   }
   
   .section {
-    padding: 4rem 2rem;
+    padding: 2rem 2rem 4rem;
   }
   
   .features {

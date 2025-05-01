@@ -19,15 +19,15 @@ import React from 'react';
        </div>
        <ul className="nav-links">
          <li>
-           <NavLink to="/" className="nav-link">Home</NavLink>
+           <NavLink to="/" className="nav-link">Strona Główna</NavLink>
          </li>
          {!user && (
            <>
              <li>
-               <NavLink to="/login" className="nav-link">Login</NavLink>
+               <NavLink to="/login" className="nav-link">Logowanie</NavLink>
              </li>
              <li>
-               <NavLink to="/register" className="nav-link">Sign Up</NavLink>
+               <NavLink to="/register" className="nav-link">Rejestracja</NavLink>
              </li>
            </>
          )}
