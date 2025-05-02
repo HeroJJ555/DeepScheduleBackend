@@ -6,6 +6,7 @@ import RegisterPage from "../auth/RegisterPage";
 import LoginPage from "../auth/LoginPage";
 import HomePage from "../features/home/HomePage";
 import PanelPage from "../features/panel/PanelPage";
+import PrivacyPolicy from '../components/PrivacyPolicy';
 import ProfilePage from "../features/profile/ProfilePage";
 import AnnouncementsPage from "../features/announcements/AnnouncementsPage";
 import ChangeLogPage from "../features/changelog/ChangeLogPage";
@@ -32,6 +33,7 @@ export default function AppRoutes() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/wiki" element={<WikiPage />} />
       <Route path="/support" element={<SupportPage />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
