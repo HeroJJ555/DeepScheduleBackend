@@ -4,25 +4,30 @@ import './faq.css';
 const faqs = [
   {
     q: 'Czy mogę wygenerować plan dla wielu szkół?',
-    a: 'Tak — Twoje konto może mieć przypisane wiele szkół i generować plany niezależnie dla każdej z nich.'
+    a: 'Tak! DeepSchedule pozwala przypisać do Twojego konta dowolną liczbę szkół. Dla każdej placówki możesz w dowolnym momencie wygenerować osobny, zoptymalizowany plan lekcji – bez konfliktów i ręcznego sprawdzania.'
   },
   {
     q: 'Jak często mogę zmieniać wygenerowany plan?',
-    a: 'W każdej chwili, manualnie za pomocą sekcji “entries” lub generując nowy plan od zera.'
+    a: 'Plan możesz edytować w każdej chwili, korzystając z sekcji „Entries” lub po prostu wygenerować go od nowa. Nie ma ograniczeń czasowych – wykorzystaj DeepSchedule tak często, jak potrzebujesz aktualizacji.'
   },
   {
-    q: 'Czy mogę eksportować plan do PDF?',
-    a: 'Tak — wkrótce dodamy możliwość eksportu do PDF i CSV bezpośrednio z interfejsu.'
+    q: 'Czy mogę eksportować plan do PDF/CSV?',
+    a: 'Tak – wkrótce dodamy bezpośrednią funkcję eksportu planu do formatu PDF i CSV. Dzięki temu łatwo udostępnisz harmonogram online rodzicom, nauczycielom lub wstawisz go na stronę szkoły.'
   },
   {
     q: 'Czy dane są bezpieczne?',
-    a: 'Cały ruch jest szyfrowany HTTPS, a dostęp chroniony JWT. Hasła są hashowane bcryptem.'
+    a: 'Oczywiście. Cały ruch odbywa się po protokole HTTPS, dostęp jest chroniony za pomocą bezpiecznego tokenu JWT, a hasła użytkowników są hashowane algorytmem bcrypt. Twoje plany lekcji są przechowywane w szyfrowanej bazie danych.'
   }
 ];
 
 export default function FAQSection() {
   return (
-    <section className="faq section" id="faq">
+    <section
+      className="faq section"
+      id="faq"
+      itemScope
+      itemType="https://schema.org/FAQPage"
+    >
       <h2>FAQ</h2>
       <div className="faq-list">
         {faqs.map((item, i) => (
@@ -48,13 +53,19 @@ function FaqItem({ question, answer }) {
   }, [open]);
 
   return (
-    <div className="faq-item">
+    <div
+      className="faq-item"
+      itemScope
+      itemProp="mainEntity"
+      itemType="https://schema.org/Question"
+    >
       <button
         className="faq-question"
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
+        itemProp="name"
       >
-        <i style={{fontSize: "1.5rem"}} className="fa-solid fa-question-circle"></i>
+        <i style={{ fontSize: "1.5rem" }} className="fa-solid fa-question-circle"></i>
         {question}
         <span className={`faq-icon ${open ? 'open' : ''}`}>
           {open ? '−' : '+'}
@@ -63,8 +74,15 @@ function FaqItem({ question, answer }) {
       <div
         className="faq-answer-wrapper"
         style={{ maxHeight }}
+        itemScope
+        itemProp="acceptedAnswer"
+        itemType="https://schema.org/Answer"
       >
-        <p ref={contentRef} className="faq-answer">
+        <p
+          ref={contentRef}
+          className="faq-answer"
+          itemProp="text"
+        >
           {answer}
         </p>
       </div>
