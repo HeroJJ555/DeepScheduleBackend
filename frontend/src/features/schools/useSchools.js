@@ -39,3 +39,48 @@ export function useDeleteSchool() {
     },
   });
 }
+// Członkowie
+export function useMembers(schoolId, opts = {}) {
+  return useQuery({
+    queryKey: ['schools', schoolId, 'members'],
+    queryFn: () =>
+      api.get(`/schools/${schoolId}/users`).then(r => r.data),
+    enabled: opts.enabled === true
+  });
+}
+export function useInviteMember(schoolId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: data =>
+      api.post(`/schools/${schoolId}/users`, data).then(r => r.data),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ['schools', schoolId, 'members'] })
+  });
+}
+export function useUpdateMember(schoolId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, role, position }) =>
+      api.put(`/schools/${schoolId}/users/${userId}`, { role, position })
+        .then(r => r.data),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ['schools', schoolId, 'members'] })
+  });
+}
+export function useRemoveMember(schoolId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: userId =>
+      api.delete(`/schools/${schoolId}/users/${userId}`),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ['schools', schoolId, 'members'] })
+  });
+}
+
+export function useSchool(schoolId) {
+  return useQuery({
+    queryKey: ['schools', schoolId],
+    queryFn: () =>
+      api.get(`/schools/${schoolId}`).then(r => r.data),
+  });
+}

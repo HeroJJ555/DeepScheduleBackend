@@ -1,0 +1,90 @@
+.msch-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn .3s;
+    z-index: 1000;
+  }
+  .msch-modal {
+    background: #fff;
+    border-radius: 8px;
+    width: 500px; max-width: 90%;
+    max-height: 85vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    animation: slideDown .3s;
+  }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes slideDown {
+    from{transform:translateY(-10px); opacity:0}
+    to{transform:translateY(0);opacity:1}
+  }
+  .msch-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1rem; border-bottom:1px solid #eee;
+  }
+  .msch-close {
+    background:none; border:none; font-size:1.4rem; cursor:pointer;
+  }
+  .msch-tabs {
+    display:flex; border-bottom:1px solid #ddd;
+  }
+  .msch-tabs button {
+    flex:1; padding:.75rem; background:none; border:none;
+    cursor:pointer; transition:background .2s;
+  }
+  .msch-tabs .active {
+    background:#f4f4f4; font-weight:600;
+  }
+  .msch-form, .msch-invite {
+    padding:1rem; display:flex; flex-wrap:wrap; gap:1rem;
+  }
+  .msch-form label, .msch-invite input, .msch-invite select {
+    flex:1 1 45%; display:flex; flex-direction:column; font-weight:500;
+  }
+  .msch-form input, .msch-form select,
+  .msch-invite input, .msch-invite select {
+    margin-top:.25rem; padding:.5rem; border:1px solid #ccc; border-radius:4px;
+  }
+  .msch-form button, .msch-invite button {
+    padding:.6rem 1.2rem; align-self:flex-end; margin-top: auto;
+  }
+  .msch-members { padding:1rem; overflow-y:auto; }
+  .msch-list {
+    list-style:none; margin:0; padding:0; max-height:300px; overflow-y:auto;
+  }
+  .msch-list li {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:.5rem 0; border-bottom:1px solid #f0f0f0;
+  }
+  .msch-actions {
+    display:flex; gap:.5rem; align-items:center;
+  }
+  .msch-actions select {
+    padding:.3rem; border:1px solid #ccc; border-radius:4px;
+  }
+  .icon-button.del {
+    background:none; border:none; color:#c00; font-size:1rem;
+    cursor:pointer; transition:color .2s;
+  }
+  .icon-button.del:hover {
+    color:#a00;
+  }
+  .btn-danger {
+    background: #e53e3e;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: opacity 0.2s;
+  }
+  .btn-danger:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+  .btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  

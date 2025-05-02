@@ -1,36 +1,42 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate, Outlet } from 'react-router-dom';
-import ManageSubjectsModal from '../subjects/ManageSubjectsModal';
-import './SchoolDashboardPage.css';
+import React, { useState } from "react";
+import { useParams, useNavigate, Outlet } from "react-router-dom";
+import ManageSubjectsModal from "../subjects/ManageSubjectsModal";
+import ManageSchoolModal from "./ManageSchoolModal";
+import "./SchoolDashboardPage.css";
 
 export default function SchoolDashboardPage() {
   const { schoolId } = useParams();
   const nav = useNavigate();
   const [showSubjects, setShowSubjects] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const cards = [
-    { title: 'Nauczyciele',    icon: 'fa-solid fa-user-tie',    path: 'teachers' },
-    { title: 'Przedmioty',     icon: 'fa-solid fa-book-open',   path: 'subjects' },
-    { title: 'Sale',           icon: 'fa-solid fa-door-open',   path: 'rooms' },
-    { title: 'Klasy',          icon: 'fa-solid fa-chalkboard',  path: 'classes' },
+    { title: "Nauczyciele", icon: "fa-solid fa-user-tie", path: "teachers" },
+    { title: "Przedmioty", icon: "fa-solid fa-book-open", path: "subjects" },
+    { title: "Sale", icon: "fa-solid fa-door-open", path: "rooms" },
+    { title: "Klasy", icon: "fa-solid fa-chalkboard", path: "classes" },
     {
-      title: 'Generuj plan',
-      icon: 'fa-solid fa-cogs',
-      path: `/panel/schools/${schoolId}/generate`
+      title: "Generuj plan",
+      icon: "fa-solid fa-table",
+      path: `/panel/schools/${schoolId}/generate`,
     },
     {
-      title: 'Podgląd planu',
-      icon: 'fa-solid fa-calendar-alt',
-      path: `/panel/schools/${schoolId}/timetable`
+      title: "Podgląd planu",
+      icon: "fa-solid fa-calendar-alt",
+      path: `/panel/schools/${schoolId}/timetable`,
+    },
+    {
+      title: "Ustawienia szkoły",
+      icon: "fa-solid fa-gears",
+      path: "settings",
     },
   ];
 
-  const handleCardClick = card => {
-    if (card.path === 'subjects') {
-      // zamiast nawigować, otwieramy modal
-      setShowSubjects(true);
-    } else {
-      const to = card.path.startsWith('/')
+  const handleCardClick = (card) => {
+    if (card.path === "subjects") setShowSubjects(true);
+    else if (card.path === "settings") setShowSettings(true);
+    else {
+      const to = card.path.startsWith("/")
         ? card.path
         : `/panel/schools/${schoolId}/${card.path}`;
       nav(to);
@@ -51,10 +57,10 @@ export default function SchoolDashboardPage() {
             onClick={() => handleCardClick(c)}
             role="button"
             tabIndex={0}
-            onKeyDown={e => e.key === 'Enter' && handleCardClick(c)}
+            onKeyDown={(e) => e.key === "Enter" && handleCardClick(c)}
           >
             <div className="sd-icon-wrapper">
-              <i className={c.icon + ' sd-icon'}></i>
+              <i className={c.icon + " sd-icon"}></i>
             </div>
             <h3 className="sd-card-title">{c.title}</h3>
           </div>
@@ -69,6 +75,12 @@ export default function SchoolDashboardPage() {
         schoolId={schoolId}
         isOpen={showSubjects}
         onClose={() => setShowSubjects(false)}
+      />
+
+      <ManageSchoolModal
+        schoolId={schoolId}
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
       />
     </div>
   );
