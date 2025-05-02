@@ -1,70 +1,97 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import api from '../api/client';
+// src/layouts/DashboardLayout.jsx
+import React, { useState } from 'react';
+import { Outlet, NavLink } from 'react-router-dom';
+import { useSchools } from '../features/schools/useSchools';
+import CreateSchoolModal from '../features/schools/CreateSchoolModal';
 import './DashboardLayout.css';
 
 export default function DashboardLayout() {
-  const [schools, setSchools] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    api.get('/schools').then(res => {
-      setSchools(res.data);
-      setLoading(false);
-    });
-  }, []);
+  const { data: schools = [], isLoading } = useSchools();
+  const [showCreate, setShowCreate] = useState(false);
 
   return (
     <div className="ds-dashboard">
       <aside className="ds-sidebar">
-        {/* Sekcja Szkoły */}
+        {/* --- Sekcja Szkoły --- */}
         <div className="ds-sidebar-section">
           <h4 className="ds-section-title">Szkoły</h4>
           <button
             className="ds-btn-new"
-            onClick={() => navigate('/panel/schools/new')}
+            onClick={() => setShowCreate(true)}
           >
             <i className="fa-solid fa-plus"></i>
             Utwórz szkołę
           </button>
-          {loading ? (
-            <p className="ds-loading">Ładowanie…</p>
+
+          {isLoading ? (
+            <p className="ds-loading">Ładowanie szkół…</p>
           ) : schools.length === 0 ? (
             <p className="ds-empty">Brak szkół</p>
           ) : (
             <nav className="ds-school-list">
               {schools.map(s => (
                 <NavLink
-                  to={`/panel/schools/${s.id}`}
                   key={s.id}
-                  className="ds-nav-link"
+                  to={`/panel/schools/${s.id}`}
+                  className={({ isActive }) =>
+                    isActive ? 'ds-nav-link active' : 'ds-nav-link'
+                  }
                 >
                   <i className="fa-solid fa-school"></i>
-                  {s.name}
+                  <span className="ds-nav-text">{s.name}</span>
                 </NavLink>
               ))}
             </nav>
           )}
         </div>
 
-        {/* Inne linki panelu */}
+        {/* --- Sekcja Panel --- */}
         <div className="ds-sidebar-section">
           <h4 className="ds-section-title">Panel</h4>
-          <NavLink to="/panel/profile" className="ds-nav-link">
-            <i className="fa-solid fa-user-circle"></i> Profil
+          <NavLink
+            to="/panel/profile"
+            className={({ isActive }) =>
+              isActive ? 'ds-nav-link active' : 'ds-nav-link'
+            }
+          >
+            <i className="fa-solid fa-user-circle"></i>
+            <span className="ds-nav-text">Profil</span>
           </NavLink>
-          <NavLink to="/panel/announcements" className="ds-nav-link">
-            <i className="fa-solid fa-bullhorn"></i> Ogłoszenia
+          <NavLink
+            to="/panel/announcements"
+            className={({ isActive }) =>
+              isActive ? 'ds-nav-link active' : 'ds-nav-link'
+            }
+          >
+            <i className="fa-solid fa-bullhorn"></i>
+            <span className="ds-nav-text">Ogłoszenia</span>
           </NavLink>
-          <NavLink to="/panel/changelog" className="ds-nav-link">
-            <i className="fa-solid fa-list"></i> ChangeLog
+          <NavLink
+            to="/panel/changelog"
+            className={({ isActive }) =>
+              isActive ? 'ds-nav-link active' : 'ds-nav-link'
+            }
+          >
+            <i className="fa-solid fa-list"></i>
+            <span className="ds-nav-text">ChangeLog</span>
           </NavLink>
-          <NavLink to="/wiki" className="ds-nav-link">
-            <i className="fa-solid fa-book-open"></i> Wiki
+          <NavLink
+            to="/wiki"
+            className={({ isActive }) =>
+              isActive ? 'ds-nav-link active' : 'ds-nav-link'
+            }
+          >
+            <i className="fa-solid fa-book-open"></i>
+            <span className="ds-nav-text">Wiki</span>
           </NavLink>
-          <NavLink to="/support" className="ds-nav-link">
-            <i className="fa-solid fa-headset"></i> Support
+          <NavLink
+            to="/support"
+            className={({ isActive }) =>
+              isActive ? 'ds-nav-link active' : 'ds-nav-link'
+            }
+          >
+            <i className="fa-solid fa-headset"></i>
+            <span className="ds-nav-text">Support</span>
           </NavLink>
         </div>
       </aside>
@@ -72,6 +99,11 @@ export default function DashboardLayout() {
       <main className="ds-dashboard-content">
         <Outlet />
       </main>
+
+      <CreateSchoolModal
+        isOpen={showCreate}
+        onClose={() => setShowCreate(false)}
+      />
     </div>
   );
 }

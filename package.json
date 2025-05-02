@@ -4,22 +4,21 @@
     "private": true,
     "description": "Monorepo for DeepSchedule backend and frontend",
     "contributors": [
-      "Jan Jakubowski",
-      "Wiktor Alisch"
+        "Jan Jakubowski",
+        "Wiktor Alisch"
     ],
     "license": "MIT",
     "workspaces": [
-      "backend",
-      "frontend"
+        "backend",
+        "frontend"
     ],
     "scripts": {
-      "dev:backend": "cd backend && npm run start",
-      "dev:frontend": "cd frontend && npm run dev",
-      "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
-      "postinstall": "npm install --prefix backend && npm install --prefix frontend"
+        "dev:backend": "cd backend && npm run start",
+        "dev:frontend": "cd frontend && npm run dev",
+        "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+        "postinstall": "npm install --prefix backend && npm install --prefix frontend"
     },
     "devDependencies": {
-      "concurrently": "^7.6.0"
+        "concurrently": "^7.6.0"
     }
-  }
-  
+}

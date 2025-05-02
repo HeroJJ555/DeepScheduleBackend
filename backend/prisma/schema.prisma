@@ -12,6 +12,12 @@ enum Role {
   USER
 }
 
+enum SchoolType {
+  LO
+  TECHNIKUM
+  BRANZOWA     
+}
+
 enum SchoolRole {
   ADMIN
   TEACHER
@@ -31,6 +37,7 @@ model User {
 model School {
   id        Int            @id @default(autoincrement())
   name      String
+  type      SchoolType     @default(LO)
   address   String?
   city      String?
   users     SchoolOnUser[]
@@ -44,13 +51,21 @@ model School {
 }
 
 model SchoolOnUser {
-  user     User       @relation(fields: [userId], references: [id])
-  userId   Int
-  school   School     @relation(fields: [schoolId], references: [id])
-  schoolId Int
-  role     SchoolRole @default(TEACHER)
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int
+  school    School     @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  role      SchoolRole @default(TEACHER)
+  position  UserPosition  @default(NAUCZYCIEL)
 
   @@id([userId, schoolId])
+}
+
+enum UserPosition {
+  DYREKTOR
+  VICE_DYREKTOR
+  NAUCZYCIEL
+  KIEROWNIK_IT
 }
 
 model Teacher {

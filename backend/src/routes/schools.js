@@ -1,20 +1,19 @@
-import { Router } from 'express';
-import validateSchema from '../middleware/validateSchema.js';
-import { createSchoolSchema, updateSchoolSchema } from '../utils/schemaDefs.js';
+// src/routes/schools.js
+import express from 'express';
+// importujemy wszystkie named-exports jako obiekt
 import * as schoolController from '../controllers/schoolController.js';
 
-const router = Router();
+// jeśli w auth.js zostawiłeś default export:
+import authMiddleware from '../middleware/auth.js';
 
-router.get('/', schoolController.listSchools);
-router.post('/',
-  validateSchema(createSchoolSchema),
-  schoolController.createSchool
-);
-router.get('/:id', schoolController.getSchool);
-router.put('/:id',
-  validateSchema(updateSchoolSchema),
-  schoolController.updateSchool
-);
+const router = express.Router();
+router.use(authMiddleware);
+
+// używamy dokładnie tych samych nazw:
+router.get('/',    schoolController.getSchools);
+router.post('/',   schoolController.createSchool);
+router.get('/:id', schoolController.getSchoolById);
+router.put('/:id', schoolController.updateSchool);
 router.delete('/:id', schoolController.deleteSchool);
 
 export default router;

@@ -1,37 +1,80 @@
 .school-dashboard {
-    padding: 2rem;
-  }
-  
-  .school-dashboard h2 {
-    margin-bottom: 1.5rem;
-    color: #333;
-  }
-  
+  padding: 2rem;
+}
+
+.sd-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sd-header h2 {
+  color: #333;
+  font-size: 1.75rem;
+}
+
+/* Grid kart */
+.sd-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Pojedyncza karta */
+.sd-card {
+  background: #fff;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+.sd-card:focus {
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.5);
+}
+.sd-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+/* Ikona w karcie z tłem */
+.sd-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(102,126,234,0.1);
+  transition: background 0.2s;
+}
+.sd-card:hover .sd-icon-wrapper {
+  background: rgba(102,126,234,0.2);
+}
+.sd-icon {
+  font-size: 1.75rem;
+  color: #667eea;
+}
+
+/* Tytuł karty */
+.sd-card-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+  transition: color 0.2s;
+}
+.sd-card:hover .sd-card-title {
+  color: #667eea;
+}
+
+/* Responsywność: mniej kolumn na małych ekranach */
+@media (max-width: 600px) {
   .sd-card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
-  
-  .sd-card {
-    background: #fff;
-    padding: 1.5rem;
-    text-align: center;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    cursor: pointer;
-    transition: transform .2s, box-shadow .2s;
-  }
-  
-  .sd-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  }
-  
-  .sd-icon {
-    font-size: 2rem;
-    color: #667eea;
-    margin-bottom: .75rem;
-  }
-  
+}

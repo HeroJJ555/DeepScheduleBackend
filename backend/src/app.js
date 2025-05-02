@@ -11,6 +11,7 @@ import roomRouter from './routes/rooms.js';
 import timeslotRouter from './routes/timeslots.js';
 import timetableRouter from './routes/timetable.js';
 import entriesRouter from './routes/entries.js';
+import subjectRoutes from './routes/subjects.js';
 
 import authMiddleware from './middleware/auth.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -31,6 +32,7 @@ app.use('/schools', teacherRouter);
 app.use('/schools', classRouter);
 app.use('/schools', roomRouter);
 app.use('/schools', timeslotRouter);
+app.use('/', subjectRoutes);
 app.use('/', timetableRouter);
 app.use('/', entriesRouter);
 
