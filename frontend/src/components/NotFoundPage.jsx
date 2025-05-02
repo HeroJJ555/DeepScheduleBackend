@@ -13,9 +13,9 @@ import React from 'react';
          </p>
          <button
            className="btn-primary notfound-btn"
-           onClick={() => nav('/')}
+           onClick={() => nav(-1)}
          >
-           Wróć na stronę główną
+           Wróć
          </button>
        </div>
      </div>
