@@ -54,7 +54,7 @@ function FaqItem({ question, answer }) {
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
       >
-        <i className="fa-solid fa-question-circle"></i>
+        <i className="fa-solid fa-question-circle" style="font-size:1.5rem"></i>
         {question}
         <span className={`faq-icon ${open ? 'open' : ''}`}>
           {open ? '−' : '+'}

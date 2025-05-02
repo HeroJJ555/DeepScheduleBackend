@@ -3,7 +3,7 @@
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
       url("/hero-bg.jpg") center/cover no-repeat;
     color: #ffffff;
-    padding: 6rem 2rem 5rem;
+    padding: 6rem 2rem 8rem;
     text-align: center;
     overflow: hidden;
   }
@@ -14,7 +14,7 @@
   }
   
   .hero-content h1 {
-    font-size: 3rem;
+    font-size: 4rem;
     margin-bottom: 0.5rem;
   }
   
