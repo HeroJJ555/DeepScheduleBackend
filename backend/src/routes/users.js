@@ -1,18 +1,17 @@
-import { Router } from 'express';
-import validateSchema from '../middleware/validateSchema.js';
-import { updateUserSchema, inviteSchema } from '../utils/schemaDefs.js';
-import * as userController from '../controllers/userController.js';
+import express from 'express';
+import authMiddleware from '../middleware/auth.js';
+import {
+  getMe,
+  updateMe,
+  inviteUserController 
+} from '../controllers/userController.js';
 
-const router = Router();
+const router = express.Router();
 
-router.get('/me', userController.getMe);
-router.put('/me',
-  validateSchema(updateUserSchema),
-  userController.updateMe
-);
-router.post('/invite',
-  validateSchema(inviteSchema),
-  userController.inviteUser
-);
+router.use(authMiddleware);
+
+router.get('/users/me', getMe);
+router.put('/users/me', updateMe);
+router.post('/users/invite', inviteUserController);
 
 export default router;

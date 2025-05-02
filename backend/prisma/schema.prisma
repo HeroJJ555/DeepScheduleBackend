@@ -40,14 +40,14 @@ model School {
   type      SchoolType     @default(LO)
   address   String?
   city      String?
-  users     SchoolOnUser[]
-  teachers  Teacher[]
-  subjects  Subject[]
-  classes   Class[]
-  rooms     Room[]
-  timeslots TimeSlot[]
+  users     SchoolOnUser[] @relation(onDelete: Cascade)
+  teachers  Teacher[]      @relation(onDelete: Cascade)
+  subjects  Subject[]      @relation(onDelete: Cascade)
+  classes   Class[]        @relation(onDelete: Cascade)
+  rooms     Room[]         @relation(onDelete: Cascade)
+  timeslots TimeSlot[]     @relation(onDelete: Cascade)
   createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  updatedAt DateTime       @updatedAt 
 }
 
 model SchoolOnUser {

@@ -27,7 +27,7 @@ app.use('/auth', authRouter);
 // wszystkie poniżej wymagają JWT
 app.use(authMiddleware);
 
-app.use('/users', usersRouter);
+app.use('/', usersRouter);
 app.use('/schools', schoolsRouter);
 app.use('/schools', teacherRouter);
 app.use('/schools', classRouter);

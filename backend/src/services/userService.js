@@ -10,9 +10,9 @@ const INVITATION_EXP = '7d'; // ważność linku zaproszenia
 /**
  * Pobiera dane użytkownika wraz z przypisaniami do szkół.
  */
-export async function getUserById(userId) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
+export async function getUserById(id) {
+  return prisma.user.findUnique({
+    where: { id },    // id musi być liczbą
     select: {
       id: true,
       email: true,
@@ -21,6 +21,7 @@ export async function getUserById(userId) {
       schools: {
         select: {
           role: true,
+          position: true,
           school: {
             select: { id: true, name: true }
           }
@@ -28,14 +29,7 @@ export async function getUserById(userId) {
       }
     }
   });
-  if (!user) {
-    const err = new Error('Użytkownik nie znaleziony');
-    err.statusCode = 404;
-    throw err;
-  }
-  return user;
 }
-
 /**
  * Aktualizuje dane aktualnego użytkownika (imię i/lub hasło).
  */

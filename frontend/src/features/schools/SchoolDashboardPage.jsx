@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Outlet } from "react-router-dom";
 import ManageSubjectsModal from "../subjects/ManageSubjectsModal";
+import { useSchool } from './useSchools';
 import ManageSchoolModal from "./ManageSchoolModal";
 import "./SchoolDashboardPage.css";
 
 export default function SchoolDashboardPage() {
   const { schoolId } = useParams();
   const nav = useNavigate();
+  const { data: school, isError, error } = useSchool(schoolId);
+  useEffect(() => {
+    if (isError && error?.response?.status === 404) {
+      nav('/panel', { replace: true });
+    }
+  }, [isError, error, nav]);
+
   const [showSubjects, setShowSubjects] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-
+  
   const cards = [
     { title: "Nauczyciele", icon: "fa-solid fa-user-tie", path: "teachers" },
     { title: "Przedmioty", icon: "fa-solid fa-book-open", path: "subjects" },
@@ -46,7 +54,7 @@ export default function SchoolDashboardPage() {
   return (
     <div className="school-dashboard">
       <header className="sd-header">
-        <h2>Panel szkoły #{schoolId}</h2>
+        <h2>Panel szkoły (ID: {schoolId})</h2>
       </header>
 
       <div className="sd-card-grid">
