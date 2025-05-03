@@ -1,36 +1,107 @@
-import * as teacherService from '../services/teacherService.js';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
-export async function listTeachers(req, res, next) {
+/** GET /schools/:schoolId/teachers */
+export async function getTeachersBySchool(req, res, next) {
   try {
-    const list = await teacherService.listTeachers(req.params.schoolId, req.user);
-    res.json(list);
-  } catch (e) { next(e) }
+    const schoolId = Number(req.params.schoolId);
+    const teachers = await prisma.teacher.findMany({
+      where: { schoolId },
+      include: {
+        // zamiast `subjects`:
+        teacherSubjects: {
+          include: { subject: true }
+        },
+        availabilities: {
+          include: { timeslot: true }
+        }
+      }
+    });
+    res.json(teachers);
+  } catch (e) {
+    next(e);
+  }
 }
 
+/** POST /schools/:schoolId/teachers */
 export async function createTeacher(req, res, next) {
   try {
-    const t = await teacherService.createTeacher(req.params.schoolId, req.body, req.user);
-    res.status(201).json(t);
-  } catch (e) { next(e) }
+    const schoolId = Number(req.params.schoolId);
+    const { name, subjectIds = [], timeslotIds = [], workload } = req.body;
+    if (!name.trim()) return res.status(400).json({ error: 'Nazwa wymagana' });
+
+    const teacher = await prisma.teacher.create({
+      data: {
+        name: name.trim(),
+        workload,
+        school: { connect: { id: schoolId } },
+        // tworzymy relacje w tablicy teacherSubjects
+        teacherSubjects: {
+          create: subjectIds.map(id => ({
+            subject: { connect: { id } }
+          }))
+        },
+        availabilities: {
+          create: timeslotIds.map(id => ({
+            timeslot: { connect: { id } }
+          }))
+        }
+      },
+      include: {
+        teacherSubjects: { include: { subject: true } },
+        availabilities:   { include: { timeslot: true } }
+      }
+    });
+    res.status(201).json(teacher);
+  } catch (e) {
+    next(e);
+  }
 }
 
-export async function getTeacher(req, res, next) {
-  try {
-    const t = await teacherService.getTeacher(req.params.teacherId, req.user);
-    res.json(t);
-  } catch (e) { next(e) }
-}
-
+/** PUT /teachers/:id */
 export async function updateTeacher(req, res, next) {
   try {
-    const t = await teacherService.updateTeacher(req.params.teacherId, req.body, req.user);
-    res.json(t);
-  } catch (e) { next(e) }
+    const id = Number(req.params.id);
+    const { name, subjectIds = [], timeslotIds = [], workload } = req.body;
+
+    // usuń stare relacje
+    await prisma.teacherSubject.deleteMany({ where: { teacherId: id } });
+    await prisma.teacherAvailability.deleteMany({ where: { teacherId: id } });
+
+    const teacher = await prisma.teacher.update({
+      where: { id },
+      data: {
+        name: name.trim(),
+        workload,
+        teacherSubjects: {
+          create: subjectIds.map(sid => ({
+            subject: { connect: { id: sid } }
+          }))
+        },
+        availabilities: {
+          create: timeslotIds.map(tid => ({
+            timeslot: { connect: { id: tid } }
+          }))
+        }
+      },
+      include: {
+        teacherSubjects: { include: { subject: true } },
+        availabilities:   { include: { timeslot: true } }
+      }
+    });
+    res.json(teacher);
+  } catch (e) {
+    next(e);
+  }
 }
 
+/** DELETE /teachers/:id */
 export async function deleteTeacher(req, res, next) {
   try {
-    await teacherService.deleteTeacher(req.params.teacherId, req.user);
-    res.status(204).end();
-  } catch (e) { next(e) }
+    const id = Number(req.params.id);
+    await prisma.teacher.delete({ where: { id } });
+    res.sendStatus(204);
+  } catch (e) {
+    next(e);
+  }
 }

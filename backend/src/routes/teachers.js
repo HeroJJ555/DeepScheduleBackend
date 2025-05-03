@@ -1,21 +1,18 @@
-import { Router } from 'express';
-import validateSchema from '../middleware/validateSchema.js';
-import { teacherSchema } from '../utils/schemaDefs.js';
-import * as teacherController from '../controllers/teacherController.js';
+import express from "express";
+import authMiddleware from "../middleware/auth.js";
+import {
+  getTeachersBySchool,
+  createTeacher,
+  updateTeacher,
+  deleteTeacher,
+} from "../controllers/teacherController.js";
 
-const router = Router();
+const router = express.Router();
+router.use(authMiddleware);
 
-router.get('/:schoolId/teachers', teacherController.listTeachers);
-router.post('/:schoolId/teachers',
-  validateSchema(teacherSchema),
-  teacherController.createTeacher
-);
-
-router.get('/teachers/:teacherId', teacherController.getTeacher);
-router.put('/teachers/:teacherId',
-  validateSchema(teacherSchema),
-  teacherController.updateTeacher
-);
-router.delete('/teachers/:teacherId', teacherController.deleteTeacher);
+router.get("/schools/:schoolId/teachers", getTeachersBySchool);
+router.post("/schools/:schoolId/teachers", createTeacher);
+router.put("/teachers/:id", updateTeacher);
+router.delete("/teachers/:id", deleteTeacher);
 
 export default router;

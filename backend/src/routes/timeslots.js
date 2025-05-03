@@ -1,16 +1,19 @@
-import { Router } from 'express';
-import validateSchema from '../middleware/validateSchema.js';
-import { timeSlotSchema } from '../utils/schemaDefs.js';
-import * as timeslotController from '../controllers/timeslotController.js';
+// backend/src/routes/timeslots.js
+import express from 'express';
+import authMiddleware  from '../middleware/auth.js';
+import {
+  getTimeSlots,
+  createTimeSlot,
+  updateTimeSlot,
+  deleteTimeSlot
+} from '../controllers/timeslotController.js';
 
-const router = Router();
+const router = express.Router();
+router.use(authMiddleware);
 
-router.get('/:schoolId/timeslots', timeslotController.listTimeSlots);
-router.post('/:schoolId/timeslots',
-  validateSchema(timeSlotSchema),
-  timeslotController.createTimeSlot
-);
-
-router.delete('/timeslots/:timeslotId', timeslotController.deleteTimeSlot);
+router.get   ('/schools/:schoolId/timeslots', getTimeSlots);
+router.post  ('/schools/:schoolId/timeslots', createTimeSlot);
+router.put   ('/timeslots/:id',               updateTimeSlot);
+router.delete('/timeslots/:id',               deleteTimeSlot);
 
 export default router;

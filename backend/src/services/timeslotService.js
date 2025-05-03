@@ -1,35 +1,54 @@
-import { prisma } from '../db.js';
+// backend/src/services/timeslotService.js
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
-export async function listTimeSlots(schoolId, user) {
-  if (!user.schoolIds.includes(+schoolId)) {
-    const err = new Error('Brak dostępu');
-    err.statusCode = 403;
-    throw err;
-  }
-  return prisma.timeSlot.findMany({ where: { schoolId: +schoolId } });
+/**
+ * Zwraca listę slotów dla danej szkoły, posortowaną po dniu i godzinie.
+ * @param {number} schoolId 
+ */
+export async function listTimeSlots(schoolId) {
+  return prisma.timeSlot.findMany({
+    where: { schoolId },
+    orderBy: [
+      { day: 'asc' },
+      { hour: 'asc' }
+    ]
+  });
 }
 
-export async function createTimeSlot(schoolId, data, user) {
-  if (!user.schoolIds.includes(+schoolId)) {
-    const err = new Error('Brak dostępu');
-    err.statusCode = 403;
-    throw err;
-  }
+/**
+ * Tworzy nowy slot w danej szkole.
+ * @param {number} schoolId 
+ * @param {{ day: number, hour: number }} data
+ */
+export async function createTimeSlot(schoolId, { day, hour }) {
   return prisma.timeSlot.create({
     data: {
-      day: data.day,
-      hour: data.hour,
-      schoolId: +schoolId
+      day,
+      hour,
+      school: { connect: { id: schoolId } }
     }
   });
 }
 
-export async function deleteTimeSlot(id, user) {
-  const ts = await prisma.timeSlot.findUnique({ where: { id } });
-  if (!ts || !user.schoolIds.includes(ts.schoolId)) {
-    const err = new Error('Brak dostępu lub slot nie istnieje');
-    err.statusCode = 404;
-    throw err;
-  }
-  return prisma.timeSlot.delete({ where: { id } });
+/**
+ * Aktualizuje slot o podanym ID.
+ * @param {number} id 
+ * @param {{ day?: number, hour?: number }} data
+ */
+export async function updateTimeSlot(id, { day, hour }) {
+  return prisma.timeSlot.update({
+    where: { id },
+    data: { day, hour }
+  });
+}
+
+/**
+ * Usuwa slot o podanym ID.
+ * @param {number} id 
+ */
+export async function deleteTimeSlot(id) {
+  return prisma.timeSlot.delete({
+    where: { id }
+  });
 }

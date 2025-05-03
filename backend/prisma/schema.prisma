@@ -15,7 +15,7 @@ enum Role {
 enum SchoolType {
   LO
   TECHNIKUM
-  BRANZOWA     
+  BRANZOWA
 }
 
 enum SchoolRole {
@@ -40,23 +40,23 @@ model School {
   type      SchoolType     @default(LO)
   address   String?
   city      String?
-  users     SchoolOnUser[] @relation(onDelete: Cascade)
-  teachers  Teacher[]      @relation(onDelete: Cascade)
-  subjects  Subject[]      @relation(onDelete: Cascade)
-  classes   Class[]        @relation(onDelete: Cascade)
-  rooms     Room[]         @relation(onDelete: Cascade)
-  timeslots TimeSlot[]     @relation(onDelete: Cascade)
+  users     SchoolOnUser[]
+  teachers  Teacher[]
+  subjects  Subject[]
+  classes   Class[]
+  rooms     Room[]
+  timeslots TimeSlot[]
   createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt 
+  updatedAt DateTime       @updatedAt
 }
 
 model SchoolOnUser {
-  user      User       @relation(fields: [userId], references: [id])
-  userId    Int
-  school    School     @relation(fields: [schoolId], references: [id])
-  schoolId  Int
-  role      SchoolRole @default(TEACHER)
-  position  UserPosition  @default(NAUCZYCIEL)
+  user     User         @relation(fields: [userId], references: [id])
+  userId   Int
+  school   School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schoolId Int
+  role     SchoolRole   @default(TEACHER)
+  position UserPosition @default(NAUCZYCIEL)
 
   @@id([userId, schoolId])
 }
@@ -69,21 +69,32 @@ enum UserPosition {
 }
 
 model Teacher {
-  id              Int              @id @default(autoincrement())
+  id              Int                   @id @default(autoincrement())
   name            String
+  workload        Int?
   email           String?
-  school          School           @relation(fields: [schoolId], references: [id])
+  school          School                @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schoolId        Int
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
   entries         TimetableEntry[]
   teacherSubjects TeacherSubject[]
+  availabilities  TeacherAvailability[]
+}
+
+model TeacherAvailability {
+  teacher    Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacherId  Int
+  timeslot   TimeSlot @relation(fields: [timeslotId], references: [id], onDelete: Cascade)
+  timeslotId Int
+
+  @@id([teacherId, timeslotId])
 }
 
 model Subject {
   id              Int              @id @default(autoincrement())
   name            String
-  school          School           @relation(fields: [schoolId], references: [id])
+  school          School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schoolId        Int
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -95,7 +106,7 @@ model Subject {
 model Class {
   id            Int              @id @default(autoincrement())
   name          String
-  school        School           @relation(fields: [schoolId], references: [id])
+  school        School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schoolId      Int
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
@@ -107,7 +118,7 @@ model Room {
   id        Int              @id @default(autoincrement())
   name      String
   capacity  Int?
-  school    School           @relation(fields: [schoolId], references: [id])
+  school    School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schoolId  Int
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
@@ -115,14 +126,15 @@ model Room {
 }
 
 model TimeSlot {
-  id        Int              @id @default(autoincrement())
-  day       Int
-  hour      Int
-  school    School           @relation(fields: [schoolId], references: [id])
-  schoolId  Int
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  entries   TimetableEntry[]
+  id                  Int                   @id @default(autoincrement())
+  day                 Int
+  hour                Int
+  school              School                @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schoolId            Int
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  entries             TimetableEntry[]
+  TeacherAvailability TeacherAvailability[]
 }
 
 model TimetableEntry {

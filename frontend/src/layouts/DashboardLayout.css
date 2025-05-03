@@ -142,6 +142,7 @@
     overflow-y: auto;
   }
   .ds-sidebar-section {
+    margin-top: -3rem;
     margin-bottom: 2rem;
   }
   .ds-section-title {
