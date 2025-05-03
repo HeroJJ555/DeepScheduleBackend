@@ -13,7 +13,7 @@ export function useTimeSlots(schoolId, opts = {}) {
       api
         .get(`/schools/${schoolId}/timeslots`)
         .then(res => res.data),
-    enabled: opts.enabled === true,
+    //enabled: opts.enabled === true,
   });
 }
 

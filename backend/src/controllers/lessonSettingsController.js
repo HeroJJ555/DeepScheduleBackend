@@ -3,7 +3,8 @@ import * as service from '../services/lessonSettingsService.js';
 export async function getLessonSettings(req, res, next) {
   try {
     const schoolId = Number(req.params.schoolId);
-    const cfg = await service.getLessonSettingsBySchool(schoolId);
+    const data = await service.getLessonSettingsBySchool(schoolId);
+    const cfg = await service.upsertLessonSettings(schoolId, data);
     res.json(cfg);
   } catch (e) { next(e); }
 }

@@ -23,9 +23,7 @@ export default function SchoolDashboardPage() {
   const { data: subjects = [] } = useSubjects(schoolId, {
     enabled: showTeachers,
   });
-  const { data: timeslots = [] } = useTimeSlots(schoolId, {
-    enabled: showTeachers,
-  });
+  const { data: timeslots = [] } = useTimeSlots(schoolId);
   const { data: lessonSettings, isLoading: loadingLessonSettings } =
     useLessonSettings(schoolId, { enabled: showTeachers });
 

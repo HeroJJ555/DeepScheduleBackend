@@ -189,4 +189,64 @@
       display: none; /* ukryj kolumnę godziny na bardzo wąskich ekranach */
     }
   }
+  .mtm-table td {
+    padding: 0;
+    border: none;
+  }
+  .mtm-table td.disabled {
+    background: #f8f8f8;
+  }
+  
+  /* przycisk zajmuje całą komórkę */
+  .mtm-slot-btn {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: background 0.15s, color 0.15s;
+  }
+  .mtm-slot-btn:hover {
+    background: #eef;
+  }
+  
+  /* zaznaczony stan */
+  .mtm-slot-btn.selected {
+    background: #667eea;
+    color: #fff;
+  }
+  
+  /* kursory */
+  .mtm-table td.disabled .mtm-slot-btn {
+    cursor: not-allowed;
+  }
+  .mtm-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  .mtm-table th,
+  .mtm-table td {
+    border: 1px solid #ddd;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  .mtm-table td.disabled {
+    background: #f8f8f8;
+    cursor: not-allowed;
+  }
+  .mtm-table td.selected {
+    background: #667eea;
+    color: #fff;
+  }
+  .mtm-time {
+    background: #f4f4f4;
+    font-weight: 500;
+  }
   
