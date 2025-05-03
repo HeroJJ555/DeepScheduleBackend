@@ -4,6 +4,8 @@ import ManageSubjectsModal from "../subjects/ManageSubjectsModal";
 import { useSchool } from "./useSchools";
 import { useSubjects } from "../subjects/useSubjects";
 import { useTimeSlots } from "../timeslots/useTimeSlots";
+import { useLessonSettings } from "../lessonSettings/useLessonSettings";
+import ManageLessonSettingsModal from "../lessonSettings/ManageLessonSettingsModal";
 import ManageSchoolModal from "./ManageSchoolModal";
 import ManageTeachersModal from "../teachers/ManageTeachersModal";
 import "./SchoolDashboardPage.css";
@@ -16,9 +18,16 @@ export default function SchoolDashboardPage() {
   const [showTeachers, setShowTeachers] = useState(false);
   const [showSubjects, setShowSubjects] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showLessonSettings, setShowLessonSettings] = useState(false);
 
-  const { data: subjects = [] }  = useSubjects(schoolId,  { enabled: showTeachers });
-  const { data: timeslots = [] } = useTimeSlots(schoolId, { enabled: showTeachers });
+  const { data: subjects = [] } = useSubjects(schoolId, {
+    enabled: showTeachers,
+  });
+  const { data: timeslots = [] } = useTimeSlots(schoolId, {
+    enabled: showTeachers,
+  });
+  const { data: lessonSettings, isLoading: loadingLessonSettings } =
+    useLessonSettings(schoolId, { enabled: showTeachers });
 
   useEffect(() => {
     if (isError && error?.response?.status === 404) {
@@ -30,10 +39,19 @@ export default function SchoolDashboardPage() {
   if (!school) return <p>Ładowanie szkoły…</p>;
 
   const cards = [
-    { title: "Nauczyciele", icon: "fa-solid fa-chalkboard-user", path: "teachers" },
+    {
+      title: "Nauczyciele",
+      icon: "fa-solid fa-chalkboard-user",
+      path: "teachers",
+    },
     { title: "Przedmioty", icon: "fa-solid fa-book-open", path: "subjects" },
     { title: "Sale", icon: "fa-solid fa-door-open", path: "rooms" },
     { title: "Klasy", icon: "fa-solid fa-chalkboard", path: "classes" },
+    {
+      title: "Lekcje & Przerwy",
+      icon: "fa-solid fa-clock",
+      path: "lessonSettings",
+    },
     {
       title: "Generuj plan",
       icon: "fa-solid fa-table",
@@ -52,10 +70,11 @@ export default function SchoolDashboardPage() {
   ];
 
   function handleCardClick(c) {
-    if (c.path === 'teachers')   return setShowTeachers(true);
-    if (c.path === 'subjects')   return setShowSubjects(true);
-    if (c.path === 'settings')   return setShowSettings(true);
-    const to = c.path.startsWith('/')
+    if (c.path === "teachers") return setShowTeachers(true);
+    if (c.path === "subjects") return setShowSubjects(true);
+    if (c.path === "settings") return setShowSettings(true);
+    if (c.path === "lessonSettings") return setShowLessonSettings(true);
+    const to = c.path.startsWith("/")
       ? c.path
       : `/panel/schools/${schoolId}/${c.path}`;
     navigate(to);
@@ -90,10 +109,11 @@ export default function SchoolDashboardPage() {
 
       <ManageTeachersModal
         schoolId={schoolId}
+        subjects={subjects}
+        timeslots={timeslots}
+        lessonSettings={lessonSettings} // <-- tu
         isOpen={showTeachers}
         onClose={() => setShowTeachers(false)}
-        timeslots={timeslots}
-        subjects={subjects}
       />
 
       <ManageSubjectsModal
@@ -106,6 +126,14 @@ export default function SchoolDashboardPage() {
         schoolId={schoolId}
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
+      />
+
+      <ManageLessonSettingsModal
+        schoolId={schoolId}
+        isOpen={showLessonSettings}
+        onClose={() => setShowLessonSettings(false)}
+        settings={lessonSettings}
+        loading={loadingLessonSettings}
       />
     </div>
   );

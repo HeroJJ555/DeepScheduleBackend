@@ -35,19 +35,33 @@ model User {
 }
 
 model School {
-  id        Int            @id @default(autoincrement())
-  name      String
-  type      SchoolType     @default(LO)
-  address   String?
-  city      String?
-  users     SchoolOnUser[]
-  teachers  Teacher[]
-  subjects  Subject[]
-  classes   Class[]
-  rooms     Room[]
-  timeslots TimeSlot[]
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id             Int             @id @default(autoincrement())
+  name           String
+  type           SchoolType      @default(LO)
+  address        String?
+  city           String?
+  users          SchoolOnUser[]
+  teachers       Teacher[]
+  subjects       Subject[]
+  classes        Class[]
+  rooms          Room[]
+  timeslots      TimeSlot[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  LessonSettings LessonSettings?
+}
+
+model LessonSettings {
+  id                 Int      @id @default(autoincrement())
+  school             School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schoolId           Int      @unique
+  lessonDuration     Int      @default(45)
+  shortBreakDuration Int      @default(10)
+  longBreakDuration  Int      @default(20)
+  longBreakAfter     Int      @default(4)
+  periodsPerDay      Int      @default(6)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model SchoolOnUser {

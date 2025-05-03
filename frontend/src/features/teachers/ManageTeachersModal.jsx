@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// src/features/teachers/ManageTeachersModal.jsx
+import React, { useState, useEffect, useMemo } from 'react';
 import { FaUserTie, FaBook, FaClock, FaTrash, FaSave, FaPlus } from 'react-icons/fa';
 import Select from 'react-select';
 import './manageTeachersModal.css';
@@ -10,49 +11,84 @@ import {
 } from './useTeachers';
 import { toast } from 'react-toastify';
 
-export default function ManageTeachersModal({ schoolId, subjects, timeslots, isOpen, onClose }) {
+export default function ManageTeachersModal({
+  schoolId,
+  subjects = [],
+  timeslots = [],
+  lessonSettings,
+  isOpen,
+  onClose
+}) {
   const { data: teachers = [], isLoading } = useTeachers(schoolId, { enabled: isOpen });
   const createT = useCreateTeacher(schoolId);
   const updateT = useUpdateTeacher(schoolId);
   const deleteT = useDeleteTeacher(schoolId);
 
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ id: null, name: '', subjectIds: [], workload: 0, timeslotIds: [] });
+  const [form, setForm] = useState({
+    id: null,
+    name: '',
+    subjectIds: [],
+    workload: 0,
+    timeslotIds: []
+  });
 
-  // Definiujemy stałe okresy lekcyjne (45’ + przerwy)
-  const periodLabels = [
-    '08:00–08:45',
-    '08:55–09:40',
-    '09:50–10:35',
-    '10:45–11:30',
-    '11:50–12:35', // dłuższa przerwa
-    '12:45–13:30',
-    '13:40–14:25'
-  ];
-  const periods = periodLabels.map((label, idx) => ({ label, idx }));
+  // 1️⃣ Oblicz etykiety okresów na podstawie lessonSettings
+  const periodLabels = useMemo(() => {
+    if (!lessonSettings) return [];
+    const {
+      lessonDuration,
+      shortBreakDuration,
+      longBreakDuration,
+      longBreakAfter,
+      periodsPerDay
+    } = lessonSettings;
+
+    let labels = [];
+    // Zakładamy start o 08:00; możesz to dodać do ustawień jeśli potrzebne
+    let current = 8 * 60; // w minutach
+
+    for (let i = 0; i < periodsPerDay; i++) {
+      const startH = Math.floor(current / 60);
+      const startM = current % 60;
+      const endMin = current + lessonDuration;
+      const endH = Math.floor(endMin / 60);
+      const endM = endMin % 60;
+      labels.push(
+        `${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}–` +
+        `${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`
+      );
+      // wybierz przerwę
+      current = endMin + (i === longBreakAfter ? longBreakDuration : shortBreakDuration);
+    }
+
+    return labels;
+  }, [lessonSettings]);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      // reset do nowego stanu przy otwarciu
       setEditing(false);
-      setForm({ id: null, name: '', subjectIds: [], workload: 0, timeslotIds: [] });
+      setForm({ id:null, name:'', subjectIds:[], workload:0, timeslotIds:[] });
     }
   }, [isOpen]);
 
-  const startEdit = t => {
+  const startEdit = teacher => {
     setEditing(true);
     setForm({
-      id: t.id,
-      name: t.name,
-      workload: t.workload || 0,
-      subjectIds: t.teacherSubjects.map(ts => ts.subject.id),
-      timeslotIds: t.availabilities.map(a => a.timeslot.id)
+      id: teacher.id,
+      name: teacher.name,
+      workload: teacher.workload || 0,
+      subjectIds: teacher.teacherSubjects.map(ts => ts.subject.id),
+      timeslotIds: teacher.availabilities.map(a => a.timeslot.id)
     });
   };
 
   const toggleSlot = slotId => {
     setForm(f => {
       const has = f.timeslotIds.includes(slotId);
-      return { ...f,
+      return {
+        ...f,
         timeslotIds: has
           ? f.timeslotIds.filter(x => x !== slotId)
           : [...f.timeslotIds, slotId]
@@ -63,13 +99,11 @@ export default function ManageTeachersModal({ schoolId, subjects, timeslots, isO
   const handleSubmit = e => {
     e.preventDefault();
     const fn = editing ? updateT : createT;
-    const payload = { ...form };
-    if (editing) payload.id = form.id;
-    fn.mutate(payload, {
+    fn.mutate(form, {
       onSuccess: () => {
         toast.success(editing ? 'Zapisano zmiany' : 'Dodano nauczyciela');
         setEditing(false);
-        setForm({ id: null, name: '', subjectIds: [], workload: 0, timeslotIds: [] });
+        setForm({ id:null, name:'', subjectIds:[], workload:0, timeslotIds:[] });
       },
       onError: err => toast.error(err.response?.data?.error || 'Błąd')
     });
@@ -80,7 +114,7 @@ export default function ManageTeachersModal({ schoolId, subjects, timeslots, isO
       onSuccess: () => {
         toast.success('Usunięto nauczyciela');
         setEditing(false);
-        setForm({ id: null, name: '', subjectIds: [], workload: 0, timeslotIds: [] });
+        setForm({ id:null, name:'', subjectIds:[], workload:0, timeslotIds:[] });
       },
       onError: err => toast.error(err.response?.data?.error || 'Błąd')
     });
@@ -126,13 +160,14 @@ export default function ManageTeachersModal({ schoolId, subjects, timeslots, isO
           <div className="mtm-row">
             <label><FaClock /> Etat (godz./tydz.)</label>
             <input
-              type="number" min="0"
+              type="number"
+              min="0"
               value={form.workload}
               onChange={e => setForm(f => ({ ...f, workload: +e.target.value }))}
             />
           </div>
 
-          {/* Tabela dostępności */}
+          {/* Dynamiczna tabela dostępności */}
           <div className="mtm-availability">
             <span>Dostępność w tygodniu</span>
             <table className="mtm-table">
@@ -145,29 +180,30 @@ export default function ManageTeachersModal({ schoolId, subjects, timeslots, isO
                 </tr>
               </thead>
               <tbody>
-                {periods.map(p => (
-                  <tr key={p.idx}>
-                    <td className="mtm-time">{p.label}</td>
+                {periodLabels.map((label, idx) => (
+                  <tr key={idx}>
+                    <td className="mtm-time">{label}</td>
                     {[0,1,2,3,4].map(day => {
-                      const slot = timeslots.find(t => t.day === day && t.hour === p.idx);
-                      const sel = slot && form.timeslotIds.includes(slot.id);
+                      // znajdź odpowiadający timeslot
+                      const slot = timeslots.find(t => t.day === day && t.hour === idx);
+                      const selected = slot && form.timeslotIds.includes(slot.id);
                       return (
                         <td
                           key={day}
-                          className={`
-                            ${!slot ? 'disabled' : ''}
-                            ${sel ? 'selected' : ''}
-                          `}
+                          className={[
+                            !slot && 'disabled',
+                            selected && 'selected'
+                          ].filter(Boolean).join(' ')}
                           onClick={() => slot && toggleSlot(slot.id)}
                           title={
                             !slot
                               ? 'Brak slotu'
-                              : sel
-                                ? 'Kliknij, aby odznaczyć'
-                                : 'Kliknij, aby zaznaczyć'
+                              : selected
+                                ? 'Odznacz dostępność'
+                                : 'Zaznacz dostępność'
                           }
                         >
-                          {sel && '✓'}
+                          {selected && '✓'}
                         </td>
                       );
                     })}
@@ -183,11 +219,7 @@ export default function ManageTeachersModal({ schoolId, subjects, timeslots, isO
               {editing ? <><FaSave /> Zapisz</> : <><FaPlus /> Dodaj</>}
             </button>
             {editing && (
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleDelete}
-              >
+              <button type="button" className="btn btn-danger" onClick={handleDelete}>
                 <FaTrash /> Usuń
               </button>
             )}

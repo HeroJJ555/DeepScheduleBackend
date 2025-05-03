@@ -13,6 +13,7 @@ import timetableRouter from './routes/timetable.js';
 import entriesRouter from './routes/entries.js';
 import subjectRoutes from './routes/subjects.js';
 import membershipRoutes from './routes/membership.js';
+import lessonSettingsRoutes from './routes/lessonSettings.js';
 
 import authMiddleware from './middleware/auth.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -37,6 +38,7 @@ app.use('/', subjectRoutes);
 app.use('/', timetableRouter);
 app.use('/', entriesRouter);
 app.use('/', membershipRoutes);
+app.use('/', lessonSettingsRoutes);
 
 // global error handler
 app.use(errorHandler);
