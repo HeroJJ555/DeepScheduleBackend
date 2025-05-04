@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
+import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 export async function ensureTimeSlotsForSchool(schoolId) {
@@ -16,7 +15,6 @@ export async function ensureTimeSlotsForSchool(schoolId) {
   }
 
   const { periodsPerDay } = settings
-
   await prisma.timeSlot.deleteMany({ where: { schoolId } })
 
   const batch = []
@@ -25,15 +23,18 @@ export async function ensureTimeSlotsForSchool(schoolId) {
       batch.push({ day, hour, schoolId })
     }
   }
-  await prisma.timeSlot.createMany({ data: batch })
+  if (batch.length) {
+    await prisma.timeSlot.createMany({ data: batch })
+  }
 }
 
 export async function listTimeSlots(schoolId) {
   return prisma.timeSlot.findMany({
     where: { schoolId },
+    select: { id: true, day: true, hour: true },
     orderBy: [
-      { day: 'asc' },
-      { hour: 'asc' }
+      { day: "asc" },
+      { hour: "asc" }
     ]
   })
 }
