@@ -2,7 +2,7 @@
 import express from 'express';
 import authMiddleware  from '../middleware/auth.js';
 import {
-  getTimeSlots,
+  listTimeSlots,
   createTimeSlot,
   updateTimeSlot,
   deleteTimeSlot
@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 router.use(authMiddleware);
 
-router.get   ('/schools/:schoolId/timeslots', getTimeSlots);
+router.get   ('/schools/:schoolId/timeslots', listTimeSlots);
 router.post  ('/schools/:schoolId/timeslots', createTimeSlot);
 router.put   ('/timeslots/:id',               updateTimeSlot);
 router.delete('/timeslots/:id',               deleteTimeSlot);

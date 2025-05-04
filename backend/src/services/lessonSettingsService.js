@@ -10,6 +10,12 @@ export async function getLessonSettingsBySchool(schoolId) {
       data: { schoolId },
     });
   }
+
+  const count = await prisma.timeSlot.count({ where: { schoolId } });
+  if (count === 0) {
+    await regenerateTimeSlotsForSchool(schoolId, cfg);
+  }
+
   return cfg;
 }
 
@@ -27,19 +33,16 @@ export async function upsertLessonSettings(schoolId, data) {
 
 async function regenerateTimeSlotsForSchool(schoolId, settings) {
     const { periodsPerDay } = settings;
-    // Kasujemy wszystkie stare sloty tej szkoły
     await prisma.timeSlot.deleteMany({ where: { schoolId } });
-  
-    // Dla dni 0–4 i okresów 0..periodsPerDay-1 tworzymy wpisy
     const creations = [];
     for (let day = 0; day < 5; day++) {
       for (let hour = 0; hour < periodsPerDay; hour++) {
         creations.push(
           prisma.timeSlot.create({
-            data: { day, hour, school: { connect: { id: schoolId } } }
+            data: { day, hour, schoolId }
           })
         );
       }
     }
     await Promise.all(creations);
-  }
+}

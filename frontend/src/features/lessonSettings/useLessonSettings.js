@@ -6,7 +6,7 @@ export function useLessonSettings(schoolId, opts = {}) {
     queryKey: ['lessonSettings', schoolId],
     queryFn: () =>
       api.get(`/schools/${schoolId}/lesson-settings`).then(r => r.data),
-    enabled: opts.enabled === true
+    enabled: opts.enabled !== false
   });
 }
 
@@ -15,7 +15,9 @@ export function useUpdateLessonSettings(schoolId) {
   return useMutation({
     mutationFn: data =>
       api.put(`/schools/${schoolId}/lesson-settings`, data).then(r => r.data),
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['lessonSettings', schoolId] })
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['lessonSettings', schoolId] });
+      qc.invalidateQueries({ queryKey: ['timeslots', schoolId] });
+    }
   });
 }

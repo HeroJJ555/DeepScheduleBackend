@@ -9,29 +9,39 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import Select from "react-select";
-import "./manageTeachersModal.css";
+import { toast } from "react-toastify";
 import {
   useTeachers,
   useCreateTeacher,
   useUpdateTeacher,
   useDeleteTeacher,
 } from "./useTeachers";
-import { toast } from "react-toastify";
+import { useTimeSlots } from "../timeslots/useTimeSlots";
+import "./manageTeachersModal.css";
 
 export default function ManageTeachersModal({
   schoolId,
   subjects = [],
-  timeslots = [],
   lessonSettings,
   isOpen,
   onClose,
 }) {
-  // pobieramy nauczycieli i sloty zawsze
-  const { data: teachers = [], isLoading } = useTeachers(schoolId);
+  // 1) Fetch teachers
+  const { data: teachers = [], isLoading: loadingTeachers } = useTeachers(
+    schoolId,
+    { enabled: isOpen }
+  );
   const createT = useCreateTeacher(schoolId);
   const updateT = useUpdateTeacher(schoolId);
   const deleteT = useDeleteTeacher(schoolId);
 
+  // 2) Fetch timeslots *inside* the modal, only when isOpen
+  const { data: timeslots = [], isLoading: loadingSlots } = useTimeSlots(
+    schoolId,
+    { enabled: isOpen }
+  );
+
+  // form state
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     id: null,
@@ -41,7 +51,7 @@ export default function ManageTeachersModal({
     timeslotIds: [],
   });
 
-  // generujemy etykiety okresów na podstawie lessonSettings
+  // compute period labels from lessonSettings
   const periodLabels = useMemo(() => {
     if (!lessonSettings) return [];
     const {
@@ -51,7 +61,6 @@ export default function ManageTeachersModal({
       longBreakAfter,
       periodsPerDay,
     } = lessonSettings;
-
     let labels = [];
     let current = 8 * 60; // start o 08:00
     for (let i = 0; i < periodsPerDay; i++) {
@@ -71,11 +80,9 @@ export default function ManageTeachersModal({
     return labels;
   }, [lessonSettings]);
 
-  // debug – zobacz co mamy za dane
+  // reset form whenever modal opens
   useEffect(() => {
     if (isOpen) {
-      console.log("🕒 periodLabels:", periodLabels);
-      console.log("🕒 timeslots:", timeslots);
       setEditing(false);
       setForm({
         id: null,
@@ -85,7 +92,21 @@ export default function ManageTeachersModal({
         timeslotIds: [],
       });
     }
-  }, [isOpen, periodLabels, timeslots]);
+  }, [isOpen]);
+
+  // if modal closed, render nothing
+  if (!isOpen) return null;
+
+  // show loading skeleton until both slots & settings are ready
+  if (loadingSlots || !lessonSettings) {
+    return (
+      <div className="mtm-overlay" onClick={onClose}>
+        <div className="mtm-modal" onClick={(e) => e.stopPropagation()}>
+          <p className="mtm-loading">Ładowanie dostępności…</p>
+        </div>
+      </div>
+    );
+  }
 
   const startEdit = (t) => {
     setEditing(true);
@@ -98,17 +119,13 @@ export default function ManageTeachersModal({
     });
   };
 
-  const toggleSlot = (slotId) => {
-    setForm((f) => {
-      const has = f.timeslotIds.includes(slotId);
-      return {
-        ...f,
-        timeslotIds: has
-          ? f.timeslotIds.filter((x) => x !== slotId)
-          : [...f.timeslotIds, slotId],
-      };
-    });
-  };
+  const toggleSlot = (slotId) =>
+    setForm((f) => ({
+      ...f,
+      timeslotIds: f.timeslotIds.includes(slotId)
+        ? f.timeslotIds.filter((x) => x !== slotId)
+        : [...f.timeslotIds, slotId],
+    }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -125,7 +142,10 @@ export default function ManageTeachersModal({
           timeslotIds: [],
         });
       },
-      onError: (err) => toast.error(err.response?.data?.error || "Błąd"),
+      onError: (err) => {
+        toast.error(err.response?.data?.error || "Błąd");
+        console.log('Submitting teacher payload:', form);
+      },
     });
   };
 
@@ -146,7 +166,6 @@ export default function ManageTeachersModal({
     });
   };
 
-  if (!isOpen) return null;
   return (
     <div className="mtm-overlay" onClick={onClose}>
       <div className="mtm-modal" onClick={(e) => e.stopPropagation()}>
@@ -158,8 +177,9 @@ export default function ManageTeachersModal({
             ×
           </button>
         </header>
+
         <form className="mtm-form" onSubmit={handleSubmit}>
-          {/* Imię */}
+          {/* Imię i nazwisko */}
           <div className="mtm-row">
             <label>
               <FaUserTie /> Imię i nazwisko
@@ -167,9 +187,7 @@ export default function ManageTeachersModal({
             <input
               type="text"
               value={form.name}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, name: e.target.value }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               required
             />
           </div>
@@ -232,27 +250,16 @@ export default function ManageTeachersModal({
                       const slot = timeslots.find(
                         (t) => t.day === day && t.hour === idx
                       );
-                      const selected =
-                        slot && form.timeslotIds.includes(slot.id);
-                      const cellCls = !slot
-                        ? "disabled"
-                        : selected
-                        ? "selected"
-                        : "";
+                      const sel = slot && form.timeslotIds.includes(slot.id);
                       return (
                         <td
                           key={day}
-                          className={cellCls}
-                          onClick={() => slot && toggleSlot(slot.id)}
-                          title={
-                            slot
-                              ? selected
-                                ? "Kliknij, aby odznaczyć"
-                                : "Kliknij, aby zaznaczyć"
-                              : "Brak slotu"
+                          className={
+                            slot ? (sel ? "selected" : "") : "disabled"
                           }
+                          onClick={() => slot && toggleSlot(slot.id)}
                         >
-                          {selected && <span className="mtm-check">✓</span>}
+                          {sel && <span className="mtm-check">✓</span>}
                         </td>
                       );
                     })}
@@ -262,7 +269,7 @@ export default function ManageTeachersModal({
             </table>
           </div>
 
-          {/* Przyciski */}
+          {/* Akcje */}
           <div className="mtm-actions">
             <button type="submit" className="btn btn-primary">
               {editing ? (
@@ -291,7 +298,7 @@ export default function ManageTeachersModal({
         <footer className="mtm-footer">
           <h4>Lista nauczycieli</h4>
           <ul className="mtm-list">
-            {isLoading ? (
+            {loadingTeachers ? (
               <li>Ładowanie…</li>
             ) : (
               teachers.map((t) => (

@@ -1,47 +1,49 @@
-// backend/src/controllers/timeslotController.js
-import * as timeslotService from '../services/timeslotService.js';
+import { PrismaClient } from '@prisma/client'
+import * as service from '../services/lessonSettingsService.js';
 
-export async function getTimeSlots(req, res, next) {
-  try {
-    const schoolId = Number(req.params.schoolId);
-    const slots = await timeslotService.listTimeSlots(schoolId);
-    res.json(slots);
-  } catch (e) {
-    next(e);
-  }
-}
+const prisma = new PrismaClient()
 
-export async function createTimeSlot(req, res, next) {
-  try {
-    const schoolId = Number(req.params.schoolId);
-    const { day, hour } = req.body;
-    if (typeof day !== 'number' || typeof hour !== 'number') {
-      return res.status(400).json({ error: 'Nieprawidłowe dane slotu' });
+export async function ensureTimeSlotsForSchool(schoolId) {
+  const existing = await prisma.timeSlot.count({ where: { schoolId } })
+  if (existing > 0) return
+
+  const settings = await service.getLessonSettingsBySchool(schoolId);
+  const { periodsPerDay } = settings
+
+  await prisma.timeSlot.deleteMany({ where: { schoolId } })
+
+  const batch = []
+  for (let day = 0; day < 5; day++) {
+    for (let hour = 0; hour < periodsPerDay; hour++) {
+      batch.push({ day, hour, schoolId })
     }
-    const slot = await timeslotService.createTimeSlot(schoolId, { day, hour });
-    res.status(201).json(slot);
-  } catch (e) {
-    next(e);
   }
+  await prisma.timeSlot.createMany({ data: batch })
 }
 
-export async function updateTimeSlot(req, res, next) {
-  try {
-    const id = Number(req.params.id);
-    const { day, hour } = req.body;
-    const slot = await timeslotService.updateTimeSlot(id, { day, hour });
-    res.json(slot);
-  } catch (e) {
-    next(e);
-  }
+export async function listTimeSlots(schoolId) {
+  return prisma.timeSlot.findMany({
+    where: { schoolId },
+    orderBy: [
+      { day: 'asc' },
+      { hour: 'asc' }
+    ]
+  })
 }
 
-export async function deleteTimeSlot(req, res, next) {
-  try {
-    const id = Number(req.params.id);
-    await timeslotService.deleteTimeSlot(id);
-    res.sendStatus(204);
-  } catch (e) {
-    next(e);
-  }
+export async function createTimeSlot(schoolId, { day, hour }) {
+  return prisma.timeSlot.create({
+    data: { day, hour, schoolId }
+  })
+}
+
+export async function updateTimeSlot(id, { day, hour }) {
+  return prisma.timeSlot.update({
+    where: { id },
+    data: { day, hour }
+  })
+}
+
+export async function deleteTimeSlot(id) {
+  return prisma.timeSlot.delete({ where: { id } })
 }
