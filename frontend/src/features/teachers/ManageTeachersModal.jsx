@@ -22,7 +22,7 @@ import "./manageTeachersModal.css";
 export default function ManageTeachersModal({schoolId, subjects = [], lessonSettings,isOpen,onClose})
 {
   const { data: teachers = [], isLoading: loadingTeachers } = useTeachers(schoolId,{ enabled: isOpen });
-  console.log('[Debug] teachers payload:', teachers);
+  console.log('[Debug] fetched teachers:', teachers);
 
   const createT = useCreateTeacher(schoolId);
   const updateT = useUpdateTeacher(schoolId);
@@ -116,6 +116,12 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
     const fn = editing ? updateT : createT;
     fn.mutate(form, {
       onSuccess: () => {
+        /*
+        * WYMAGA NAPRAWY, NIE SUBMITUJE TABLICY Z DOSTĘPNOŚCIĄ, LOG SIĘ NIE WYŚWIETLA
+        * ????????????????????????????????????????????????????????????????????????????
+        * CZEMU? DLACZEGO? WTF? 
+        */
+        console.log('[Debug] submitted teachers:', teachers);
         toast.success(editing ? "Zapisano zmiany" : "Dodano nauczyciela");
         setEditing(false);
         setForm({
@@ -125,11 +131,10 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
           workload: 0,
           timeslotIds: [],
         });
-        console.log('Submitting teacher payload:', form);
+        
       },
       onError: (err) => {
         toast.error(err.response?.data?.error || "Błąd");
-        console.log('Submitting teacher payload:', form);
       },
     });
   };
