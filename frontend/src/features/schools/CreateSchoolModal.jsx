@@ -16,7 +16,8 @@ const USER_ROLES = [
   { label: "Kierownik IT", value: "KIEROWNIK_IT" },
 ];
 
-export default function CreateSchoolModal({ isOpen, onClose }) {
+export default function CreateSchoolModal({ isOpen, onClose })
+{
   const createSchool = useCreateSchool();
   const [form, setForm] = useState({
     type: "LO",

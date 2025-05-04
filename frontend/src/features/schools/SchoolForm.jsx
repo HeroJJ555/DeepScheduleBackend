@@ -6,7 +6,8 @@ import React, { useState, useEffect } from 'react';
  *  - onSubmit: fn({ id?, name, address, city })
  *  - onCancel: fn()
  */
-export default function SchoolForm({ initial = {}, onSubmit, onCancel }) {
+export default function SchoolForm({ initial = {}, onSubmit, onCancel })
+{
   const [name, setName]       = useState('');
   const [address, setAddress] = useState('');
   const [city, setCity]       = useState('');

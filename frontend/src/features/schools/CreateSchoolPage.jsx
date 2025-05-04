@@ -1,9 +1,11 @@
+//Za co jest to odpowiedzialne?
 import React from 'react';
 import { useCreateSchool } from './useSchools';
 import SchoolForm from './SchoolForm';
 import { useNavigate } from 'react-router-dom';
 
-export default function CreateSchoolPage() {
+export default function CreateSchoolPage()
+{
   const createSchool = useCreateSchool();
   const navigate = useNavigate();
 

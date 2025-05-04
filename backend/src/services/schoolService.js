@@ -1,12 +1,14 @@
 import { prisma } from '../db.js';
 
-export async function listSchools(user) {
+export async function listSchools(user)
+{
   return prisma.school.findMany({
     where: { id: { in: user.schoolIds } }
   });
 }
 
-export async function createSchool(data, user) {
+export async function createSchool(data, user)
+{
   const school = await prisma.school.create({
     data: {
       name: data.name,
@@ -20,7 +22,8 @@ export async function createSchool(data, user) {
   return school;
 }
 
-export async function getSchool(id, user) {
+export async function getSchool(id, user)
+{
   const school = await prisma.school.findUnique({
     where: { id },
   });
@@ -32,7 +35,8 @@ export async function getSchool(id, user) {
   return school;
 }
 
-export async function updateSchool(id, data, user) {
+export async function updateSchool(id, data, user)
+{
   await getSchool(id, user);
   return prisma.school.update({
     where: { id },
@@ -40,7 +44,8 @@ export async function updateSchool(id, data, user) {
   });
 }
 
-export async function deleteSchool(id, user) {
+export async function deleteSchool(id, user)
+{
   await getSchool(id, user);
   return prisma.school.delete({ where: { id } });
 }
