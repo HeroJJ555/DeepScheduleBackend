@@ -1,20 +1,16 @@
 import { PrismaClient } from "@prisma/client";
+import { ensureTimeSlotsForSchool } from "../services/timeslotService.js";
 const prisma = new PrismaClient();
 
-/** GET /schools/:schoolId/teachers */
 export async function getTeachersBySchool(req, res, next) {
   try {
     const schoolId = Number(req.params.schoolId);
     const teachers = await prisma.teacher.findMany({
       where: { schoolId },
       include: {
-        teacherSubjects: {
-          include: { subject: true },
-        },
-        availabilities: {
-          include: { timeslot: true },
-        },
-      },
+        teacherSubjects: { include: { subject: true } },
+        availabilities:   { include: { timeslot: true } }
+      }
     });
     res.json(teachers);
   } catch (e) {
@@ -22,36 +18,20 @@ export async function getTeachersBySchool(req, res, next) {
   }
 }
 
-/** POST /schools/:schoolId/teachers */
 export async function createTeacher(req, res, next) {
   try {
     const schoolId = Number(req.params.schoolId);
-    const {
-      name,
-      subjectIds = [],
-      timeslotIds: rawSlotIds = [],
-      workload,
-    } = req.body;
-    if (!name.trim()) return res.status(400).json({ error: "Nazwa wymagana" });
+    await ensureTimeSlotsForSchool(schoolId);
+    const { name, subjectIds = [], timeslotIds: raw = [], workload } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: "Nazwa wymagana" });
 
-    const timeslotIds = rawSlotIds
-      .map((id) => Number(id))
-      .filter((id) => Number.isInteger(id) && id > 0);
-    const existingSlots = await prisma.timeSlot.findMany({
+    const timeslotIds = raw.map(Number).filter(id => Number.isInteger(id) && id > 0);
+    const existing = await prisma.timeSlot.findMany({
       where: { schoolId },
-      select: { id: true },
+      select: { id: true }
     });
-    const validSlotIds = new Set(existingSlots.map(s => s.id));
-
-    const filtered = timeslotIds.filter(id => validSlotIds.has(id));
-
-    if (filtered.length !== timeslotIds.length) {
-      console.warn(
-        `[Warning] Niektóre czasy dostępności są nieprawidłowe:`,
-        timeslotIds.filter(id => !validSlotIds.has(id))
-      );
-      //return res.status(400).json({ error: 'Niektóre czasy dostępności są nieprawidłowe' });
-    }
+    const valid = new Set(existing.map(s => s.id));
+    const filtered = timeslotIds.filter(id => valid.has(id));
 
     const teacher = await prisma.teacher.create({
       data: {
@@ -59,20 +39,20 @@ export async function createTeacher(req, res, next) {
         workload,
         school: { connect: { id: schoolId } },
         teacherSubjects: {
-          create: subjectIds.map((id) => ({
-            subject: { connect: { id } },
-          })),
+          create: subjectIds.map(id => ({
+            subject: { connect: { id: Number(id) } }
+          }))
         },
         availabilities: {
-          create: filtered.map((id) => ({
-            timeslot: { connect: { id } },
-          })),
-        },
+          create: filtered.map(id => ({
+            timeslot: { connect: { id } }
+          }))
+        }
       },
       include: {
         teacherSubjects: { include: { subject: true } },
-        availabilities: { include: { timeslot: true } },
-      },
+        availabilities:   { include: { timeslot: true } }
+      }
     });
 
     res.status(201).json(teacher);
@@ -81,29 +61,24 @@ export async function createTeacher(req, res, next) {
   }
 }
 
-/** PUT /teachers/:id */
 export async function updateTeacher(req, res, next) {
   try {
     const id = Number(req.params.id);
-    const { name, subjectIds = [], timeslotIds = [], workload } = req.body;
+    const { name, subjectIds = [], timeslotIds: raw = [], workload } = req.body;
 
     const teacher = await prisma.teacher.findUnique({ where: { id } });
-    if (!teacher)
-      return res.status(404).json({ error: "Nauczyciel nie istnieje" });
+    if (!teacher) return res.status(404).json({ error: "Nauczyciel nie istnieje" });
 
-    const existingSlots = await prisma.timeSlot.findMany({
+    await ensureTimeSlotsForSchool(teacher.schoolId);
+
+    const timeslotIds = raw.map(Number).filter(id => Number.isInteger(id) && id > 0);
+    const existing = await prisma.timeSlot.findMany({
       where: { schoolId: teacher.schoolId },
-      select: { id: true },
+      select: { id: true }
     });
-    const validSlotIds = new Set(existingSlots.map((s) => s.id));
-    const filteredSlotIds = timeslotIds.filter((id) => validSlotIds.has(id));
-    if (filteredSlotIds.length !== timeslotIds.length) {
-      return res
-        .status(400)
-        .json({ error: "Niektóre czasy dostępności są nieprawidłowe" });
-    }
+    const valid = new Set(existing.map(s => s.id));
+    const filtered = timeslotIds.filter(id => valid.has(id));
 
-    // Usuń stare relacje i stwórz nowe
     await prisma.teacherSubject.deleteMany({ where: { teacherId: id } });
     await prisma.teacherAvailability.deleteMany({ where: { teacherId: id } });
 
@@ -113,20 +88,20 @@ export async function updateTeacher(req, res, next) {
         name: name.trim(),
         workload,
         teacherSubjects: {
-          create: subjectIds.map((sid) => ({
-            subject: { connect: { id: sid } },
-          })),
+          create: subjectIds.map(sid => ({
+            subject: { connect: { id: Number(sid) } }
+          }))
         },
         availabilities: {
-          create: filteredSlotIds.map((tid) => ({
-            timeslot: { connect: { id: tid } },
-          })),
-        },
+          create: filtered.map(tid => ({
+            timeslot: { connect: { id: tid } }
+          }))
+        }
       },
       include: {
         teacherSubjects: { include: { subject: true } },
-        availabilities: { include: { timeslot: true } },
-      },
+        availabilities:   { include: { timeslot: true } }
+      }
     });
 
     res.json(updated);
@@ -134,7 +109,7 @@ export async function updateTeacher(req, res, next) {
     next(e);
   }
 }
-/** DELETE /teachers/:id */
+
 export async function deleteTeacher(req, res, next) {
   try {
     const id = Number(req.params.id);

@@ -21,16 +21,15 @@ import "./manageTeachersModal.css";
 
 export default function ManageTeachersModal({schoolId, subjects = [], lessonSettings,isOpen,onClose})
 {
-  // 1) Fetch teachers
   const { data: teachers = [], isLoading: loadingTeachers } = useTeachers(schoolId,{ enabled: isOpen });
+  console.log('[Debug] teachers payload:', teachers);
+
   const createT = useCreateTeacher(schoolId);
   const updateT = useUpdateTeacher(schoolId);
   const deleteT = useDeleteTeacher(schoolId);
-
-  // 2) Fetch timeslots *inside* the modal, only when isOpen
+  
   const { data: timeslots = [], isLoading: loadingSlots } = useTimeSlots(schoolId,{ enabled: isOpen });
-
-  // form state
+  //console.log('[Debug] timeslots:', timeslots);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     id: null,
@@ -40,7 +39,6 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
     timeslotIds: [],
   });
 
-  // compute period labels from lessonSettings
   const periodLabels = useMemo(() => {
     if (!lessonSettings) return [];
     const {
@@ -51,7 +49,7 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
       periodsPerDay,
     } = lessonSettings;
     let labels = [];
-    let current = 8 * 60; // start o 08:00
+    let current = 8 * 60;
     for (let i = 0; i < periodsPerDay; i++) {
       const h1 = Math.floor(current / 60),
         m1 = current % 60;
@@ -69,7 +67,6 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
     return labels;
   }, [lessonSettings]);
 
-  // reset form whenever modal opens
   useEffect(() => {
     if (isOpen) {
       setEditing(false);
@@ -83,10 +80,8 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
     }
   }, [isOpen]);
 
-  // if modal closed, render nothing
   if (!isOpen) return null;
 
-  // show loading skeleton until both slots & settings are ready
   if (loadingSlots || !lessonSettings) {
     return (
       <div className="mtm-overlay" onClick={onClose}>
@@ -130,6 +125,7 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
           workload: 0,
           timeslotIds: [],
         });
+        console.log('Submitting teacher payload:', form);
       },
       onError: (err) => {
         toast.error(err.response?.data?.error || "Błąd");
