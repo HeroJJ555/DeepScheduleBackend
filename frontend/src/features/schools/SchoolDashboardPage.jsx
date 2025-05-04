@@ -10,7 +10,8 @@ import ManageSchoolModal from "./ManageSchoolModal";
 import ManageTeachersModal from "../teachers/ManageTeachersModal";
 import "./SchoolDashboardPage.css";
 
-export default function SchoolDashboardPage() {
+export default function SchoolDashboardPage()
+{
   const { schoolId } = useParams();
   const nav = useNavigate();
 
@@ -20,54 +21,35 @@ export default function SchoolDashboardPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [showLessonSettings, setShowLessonSettings] = useState(false);
 
-  const { data: subjects = [] } = useSubjects(schoolId, {
-    enabled: showTeachers,
-  });
+  const { data: subjects = [] } = useSubjects(schoolId, {enabled: showTeachers});
   const { data: timeslots = [] } = useTimeSlots(schoolId);
   const { data: lessonSettings, isLoading: loadingLessonSettings } =
     useLessonSettings(schoolId, { enabled: showTeachers });
 
+  //Co to robi?
   useEffect(() => {
-    if (isError && error?.response?.status === 404) {
+    if (isError && error?.response?.status === 404)
       nav("/panel", { replace: true });
-    }
   }, [isError, error, nav]);
 
   if (isError) return null;
   if (!school) return <p>Ładowanie szkoły…</p>;
 
+  //Przyciski w panelu szkoły
   const cards = [
-    {
-      title: "Nauczyciele",
-      icon: "fa-solid fa-chalkboard-user",
-      path: "teachers",
-    },
-    { title: "Przedmioty", icon: "fa-solid fa-book-open", path: "subjects" },
-    { title: "Sale", icon: "fa-solid fa-door-open", path: "rooms" },
-    { title: "Klasy", icon: "fa-solid fa-chalkboard", path: "classes" },
-    {
-      title: "Lekcje & Przerwy",
-      icon: "fa-solid fa-clock",
-      path: "lessonSettings",
-    },
-    {
-      title: "Generuj plan",
-      icon: "fa-solid fa-table",
-      path: `/panel/schools/${schoolId}/generate`,
-    },
-    {
-      title: "Podgląd planu",
-      icon: "fa-solid fa-calendar-alt",
-      path: `/panel/schools/${schoolId}/timetable`,
-    },
-    {
-      title: "Ustawienia szkoły",
-      icon: "fa-solid fa-gears",
-      path: "settings",
-    },
+    {title: "Nauczyciele", icon: "fa-solid fa-chalkboard-user", path: "teachers"},
+    {title: "Przedmioty", icon: "fa-solid fa-book-open", path: "subjects"},
+    {title: "Sale", icon: "fa-solid fa-door-open", path: "rooms"},
+    {title: "Klasy", icon: "fa-solid fa-chalkboard", path: "classes"},
+    {title: "Lekcje & Przerwy", icon: "fa-solid fa-clock", path: "lessonSettings"},
+    {title: "Generuj plan", icon: "fa-solid fa-table", path: `/panel/schools/${schoolId}/generate`},
+    {title: "Podgląd planu", icon: "fa-solid fa-calendar-alt", path: `/panel/schools/${schoolId}/timetable`},
+    {title: "Ustawienia szkoły", icon: "fa-solid fa-gears", path: "settings"},
   ];
 
-  function handleCardClick(c) {
+  //Funkcja odpowiedzialna za kliknięcie w przycisk
+  function handleCardClick(c)
+  {
     if (c.path === "teachers") return setShowTeachers(true);
     if (c.path === "subjects") return setShowSubjects(true);
     if (c.path === "settings") return setShowSettings(true);
@@ -81,7 +63,7 @@ export default function SchoolDashboardPage() {
   return (
     <div className="school-dashboard">
       <header className="sd-header">
-        <h2>Panel szkoły (ID: {schoolId})</h2>
+        <h2>Panel szkoły</h2>
       </header>
 
       <div className="sd-card-grid">

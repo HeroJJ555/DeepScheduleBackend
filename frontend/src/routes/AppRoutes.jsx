@@ -25,7 +25,8 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 console.log("🏠 HomePage render");
-export default function AppRoutes() {
+export default function AppRoutes()
+{
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />

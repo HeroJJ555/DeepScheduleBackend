@@ -1,5 +1,7 @@
+//Za co jest to odpowiedzialne?
 import React, { useState } from 'react';
-import {
+import
+{
   useSchools,
   useCreateSchool,
   useUpdateSchool,
@@ -8,7 +10,8 @@ import {
 import SchoolForm from './SchoolForm';
 
 
-export default function SchoolsPage() {
+export default function SchoolsPage()
+{
   const { data: schools = [], isLoading } = useSchools();
   const createSchool = useCreateSchool();
   const updateSchool = useUpdateSchool();

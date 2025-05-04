@@ -64,8 +64,8 @@ import React from "react";
            <p>Dostęp tylko dla uprawnionych użytkowników.</p>
          </div>
        </section>
-       <FAQSection />
        <AboutSection />
+       <FAQSection />
        <PartnersSection />
        {/*<HowItWorks />*/}
      </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
+import
+{
   useSubjects,
   useCreateSubject,
   useUpdateSubject,
@@ -9,7 +10,8 @@ import './manageSubjectsModal.css';
 import { toast } from 'react-toastify';
 import { FaBook } from 'react-icons/fa';
 
-export default function ManageSubjectsModal({ schoolId, isOpen, onClose }) {
+export default function ManageSubjectsModal({ schoolId, isOpen, onClose })
+{
   // fetchujemy tylko jeśli isOpen === true
   const { data: subjects = [], isLoading } = useSubjects(schoolId, { enabled: isOpen });
   const createSubject = useCreateSubject(schoolId);
@@ -90,7 +92,7 @@ export default function ManageSubjectsModal({ schoolId, isOpen, onClose }) {
     <div className="msm-overlay" onClick={onClose}>
       <div className="msm-modal" onClick={e => e.stopPropagation()}>
         <header className="msm-header">
-          <h3><FaBook />   Zarządzaj przedmiotami</h3>
+          <h3><FaBook /> Zarządzaj przedmiotami</h3>
           <button className="msm-close" onClick={onClose}>×</button>
         </header>
 

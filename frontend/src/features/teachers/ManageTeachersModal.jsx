@@ -19,27 +19,16 @@ import {
 import { useTimeSlots } from "../timeslots/useTimeSlots";
 import "./manageTeachersModal.css";
 
-export default function ManageTeachersModal({
-  schoolId,
-  subjects = [],
-  lessonSettings,
-  isOpen,
-  onClose,
-}) {
+export default function ManageTeachersModal({schoolId, subjects = [], lessonSettings,isOpen,onClose})
+{
   // 1) Fetch teachers
-  const { data: teachers = [], isLoading: loadingTeachers } = useTeachers(
-    schoolId,
-    { enabled: isOpen }
-  );
+  const { data: teachers = [], isLoading: loadingTeachers } = useTeachers(schoolId,{ enabled: isOpen });
   const createT = useCreateTeacher(schoolId);
   const updateT = useUpdateTeacher(schoolId);
   const deleteT = useDeleteTeacher(schoolId);
 
   // 2) Fetch timeslots *inside* the modal, only when isOpen
-  const { data: timeslots = [], isLoading: loadingSlots } = useTimeSlots(
-    schoolId,
-    { enabled: isOpen }
-  );
+  const { data: timeslots = [], isLoading: loadingSlots } = useTimeSlots(schoolId,{ enabled: isOpen });
 
   // form state
   const [editing, setEditing] = useState(false);

@@ -1,14 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../api/client';
 
-export function useSchools() {
+export function useSchools()
+{
   return useQuery({
     queryKey: ['schools'],
     queryFn: () => api.get('/schools').then(res => res.data),
   });
 }
 
-export function useCreateSchool() {
+export function useCreateSchool()
+{
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: newSchool =>
@@ -19,7 +21,8 @@ export function useCreateSchool() {
   });
 }
 
-export function useUpdateSchool() {
+export function useUpdateSchool()
+{
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: school =>
@@ -30,7 +33,8 @@ export function useUpdateSchool() {
   });
 }
 
-export function useDeleteSchool() {
+export function useDeleteSchool()
+{
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: id => api.delete(`/schools/${id}`),
@@ -39,8 +43,10 @@ export function useDeleteSchool() {
     },
   });
 }
+
 // Członkowie
-export function useMembers(schoolId, opts = {}) {
+export function useMembers(schoolId, opts = {})
+{
   return useQuery({
     queryKey: ['schools', schoolId, 'members'],
     queryFn: () =>
@@ -48,7 +54,9 @@ export function useMembers(schoolId, opts = {}) {
     enabled: opts.enabled === true
   });
 }
-export function useInviteMember(schoolId) {
+
+export function useInviteMember(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: data =>
@@ -57,7 +65,9 @@ export function useInviteMember(schoolId) {
       qc.invalidateQueries({ queryKey: ['schools', schoolId, 'members'] })
   });
 }
-export function useUpdateMember(schoolId) {
+
+export function useUpdateMember(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ userId, role, position }) =>
@@ -67,7 +77,9 @@ export function useUpdateMember(schoolId) {
       qc.invalidateQueries({ queryKey: ['schools', schoolId, 'members'] })
   });
 }
-export function useRemoveMember(schoolId) {
+
+export function useRemoveMember(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: userId =>
@@ -77,7 +89,8 @@ export function useRemoveMember(schoolId) {
   });
 }
 
-export function useSchool(schoolId) {
+export function useSchool(schoolId)
+{
   return useQuery({
     queryKey: ['schools', schoolId],
     queryFn: () =>

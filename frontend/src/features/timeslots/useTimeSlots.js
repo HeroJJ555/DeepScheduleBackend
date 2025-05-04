@@ -6,7 +6,9 @@ import api from '../../api/client';
  * @param {number|string} schoolId
  * @param {{ enabled?: boolean }} opts
  */
-export function useTimeSlots(schoolId, opts = {}) {
+export function useTimeSlots(schoolId, opts = {})
+{
+  console.log("schoolId w useTimeSlots:", schoolId);
   return useQuery({
     queryKey: ['timeslots', schoolId],
     queryFn: () =>
@@ -21,7 +23,8 @@ export function useTimeSlots(schoolId, opts = {}) {
  * Hook do tworzenia nowego timeslotu.
  * @param {number|string} schoolId
  */
-export function useCreateTimeSlot(schoolId) {
+export function useCreateTimeSlot(schoolId)
+{
   const qc = useQueryClient();
   return useMutation(
     data =>
@@ -29,9 +32,7 @@ export function useCreateTimeSlot(schoolId) {
         .post(`/schools/${schoolId}/timeslots`, data)
         .then(res => res.data),
     {
-      onSuccess: () => {
-        qc.invalidateQueries({ queryKey: ['timeslots', schoolId] });
-      },
+      onSuccess: () => {qc.invalidateQueries({ queryKey: ['timeslots', schoolId] });}
     }
   );
 }
@@ -40,7 +41,8 @@ export function useCreateTimeSlot(schoolId) {
  * Hook do aktualizacji istniejącego timeslotu.
  * @param {number|string} schoolId
  */
-export function useUpdateTimeSlot(schoolId) {
+export function useUpdateTimeSlot(schoolId)
+{
   const qc = useQueryClient();
   return useMutation(
     ({ id, day, hour }) =>
@@ -59,7 +61,8 @@ export function useUpdateTimeSlot(schoolId) {
  * Hook do usuwania timeslotu.
  * @param {number|string} schoolId
  */
-export function useDeleteTimeSlot(schoolId) {
+export function useDeleteTimeSlot(schoolId)
+{
   const qc = useQueryClient();
   return useMutation(
     id =>

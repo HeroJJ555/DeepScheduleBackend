@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
+import
+{
   useSchool,
   useUpdateSchool,
   useMembers,
@@ -13,7 +14,8 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import ConfirmModal from '../common/ConfirmModal';
 
-export default function ManageSchoolModal({ schoolId, isOpen, onClose }) {
+export default function ManageSchoolModal({ schoolId, isOpen, onClose })
+{
   const [tab, setTab] = useState('info');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -36,8 +38,10 @@ export default function ManageSchoolModal({ schoolId, isOpen, onClose }) {
   const [inviteRole, setInviteRole] = useState('TEACHER');
   const [invitePos, setInvitePos] = useState('NAUCZYCIEL');
 
-  useEffect(() => {
-    if (isOpen && school) {
+  useEffect(() =>
+  {
+    if (isOpen && school)
+      {
       setForm({
         name:    school.name    || '',
         type:    school.type    || 'LO',
@@ -49,7 +53,8 @@ export default function ManageSchoolModal({ schoolId, isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const handleInfoSave = e => {
+  const handleInfoSave = e =>
+  {
     e.preventDefault();
     updateSchool.mutate(
       { id: schoolId, ...form },
@@ -60,7 +65,8 @@ export default function ManageSchoolModal({ schoolId, isOpen, onClose }) {
     );
   };
 
-  const handleInvite = e => {
+  const handleInvite = e =>
+  {
     e.preventDefault();
     invite.mutate(
       { email: inviteEmail, role: inviteRole, position: invitePos },
@@ -86,9 +92,12 @@ export default function ManageSchoolModal({ schoolId, isOpen, onClose }) {
       onError:   () => toast.error('Błąd usuwania')
     });
 
-  const confirmDeleteSchool = () => {
-    deleteSchool.mutate(schoolId, {
-      onSuccess: () => {
+  const confirmDeleteSchool = () =>
+  {
+    deleteSchool.mutate(schoolId,
+    {
+      onSuccess: () =>
+      {
         toast.success('Szkoła usunięta');
         setShowDeleteConfirm(false);
         onClose();
