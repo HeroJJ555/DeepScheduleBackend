@@ -1,24 +1,28 @@
 .how-it-works {
-    text-align: center;
-  }
-  .how-it-works .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-  .step-card {
-    padding: 1.5rem;
-    border: 1px solid #ddd;
-    border-radius: .75rem;
-    transition: transform .2s, box-shadow .2s;
-  }
-  .step-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,.1);
-  }
-  .step-icon {
-    font-size: 2rem;
-    color: #667eea;
-    margin-bottom: .5rem;
-  }
+  text-align: center;
+}
+
+.how-it-works .steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.step-card {
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: .75rem;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,.1);
+}
+
+.step-icon {
+  font-size: 2rem;
+  color: #667eea;
+  margin-bottom: .5rem;
+}

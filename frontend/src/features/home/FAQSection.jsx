@@ -88,7 +88,6 @@ function FaqItem({ question, answer })
         aria-expanded={open}
         itemProp="name"
       >
-        {/*<i style={{ fontSize: "1.25rem" }} className="fa-solid fa-question-circle"></i>*/}
         {question}
         <span className={`faq-icon ${open ? 'open' : ''}`}>
           {open ? '−' : '+'}

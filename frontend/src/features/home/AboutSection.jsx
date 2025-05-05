@@ -1,7 +1,8 @@
 import React from 'react';
  import './about.css';
  
- export default function AboutSection() {
+ export default function AboutSection()
+ {
    return (
      <section className="about section" id="about">
        <h2>O nas</h2>

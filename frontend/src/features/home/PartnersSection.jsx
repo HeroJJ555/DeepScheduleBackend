@@ -11,7 +11,7 @@ import React from 'react';
  export default function PartnersSection() {
    return (
      <section className="partners section" id="partners">
-       <h2>Zaufali nam (prawie)</h2>
+       <h2>Zaufali nam</h2>
        <div className="partners-grid">
          {partners.map((src, i) => (
            <div key={i} className="partner-logo">
