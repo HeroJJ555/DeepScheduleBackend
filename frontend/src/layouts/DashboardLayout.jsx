@@ -5,7 +5,8 @@ import { useSchools } from '../features/schools/useSchools';
 import CreateSchoolModal from '../features/schools/CreateSchoolModal';
 import './DashboardLayout.css';
 
-export default function DashboardLayout() {
+export default function DashboardLayout()
+{
   const { data: schools = [], isLoading } = useSchools();
   const [showCreate, setShowCreate] = useState(false);
 

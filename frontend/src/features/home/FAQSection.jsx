@@ -17,10 +17,31 @@ const faqs = [
   {
     q: 'Czy dane są bezpieczne?',
     a: 'Oczywiście. Cały ruch odbywa się po protokole HTTPS, dostęp jest chroniony za pomocą bezpiecznego tokenu JWT, a hasła użytkowników są hashowane algorytmem bcrypt. Twoje plany lekcji są przechowywane w szyfrowanej bazie danych.'
+  },
+  {
+    q: 'Czy mogę ręcznie edytować lekcje w planie?',
+    a: 'Tak! Po wygenerowaniu planu możesz swobodnie przeciągać i upuszczać lekcje, zmieniać ich miejsce oraz przeglądać szczegóły nauczycieli i klas bez konieczności ponownego generowania planu.'
+  },
+  {
+    q: 'Czy aplikacja wykrywa konflikty w planie?',
+    a: 'Tak – system automatycznie wykrywa konflikty typu „nauczyciel w dwóch klasach jednocześnie” lub „brak sali” i ich unika podczas generowania planu.'
+  },
+  {
+    q: 'Czy można ustawić ograniczenia dla nauczycieli lub klas?',
+    a: 'Tak – możesz ustawić preferencje dotyczące dostępności nauczycieli, liczby godzin dziennie dla klas, a także blokady czasowe np. na zajęcia WF czy religii.'
+  },
+  {
+    q: 'Jak długo trwa wygenerowanie planu?',
+    a: 'W zależności od liczby klas i złożoności danych – zazwyczaj kilka do kilkunastu sekund. Informujemy na bieżąco o postępie i wyniku.'
+  },
+  {
+    q: 'Czy muszę instalować coś na komputerze?',
+    a: 'Nie, DeepSchedule działa w pełni online. Wystarczy przeglądarka internetowa – logujesz się i możesz korzystać z aplikacji z dowolnego urządzenia.'
   }
 ];
 
-export default function FAQSection() {
+export default function FAQSection()
+{
   return (
     <section
       className="faq section"
@@ -38,13 +59,15 @@ export default function FAQSection() {
   );
 }
 
-function FaqItem({ question, answer }) {
+function FaqItem({ question, answer })
+{
   const [open, setOpen] = useState(false);
   const contentRef = useRef(null);
   const [maxHeight, setMaxHeight] = useState('0px');
 
   useEffect(() => {
-    if (contentRef.current) {
+    if (contentRef.current)
+    {
       setMaxHeight(open
         ? `${contentRef.current.scrollHeight}px`
         : '0px'
@@ -65,7 +88,7 @@ function FaqItem({ question, answer }) {
         aria-expanded={open}
         itemProp="name"
       >
-        <i style={{ fontSize: "1.5rem" }} className="fa-solid fa-question-circle"></i>
+        {/*<i style={{ fontSize: "1.25rem" }} className="fa-solid fa-question-circle"></i>*/}
         {question}
         <span className={`faq-icon ${open ? 'open' : ''}`}>
           {open ? '−' : '+'}

@@ -47,7 +47,7 @@ import React from "react";
          </div>
        </section>
  
-       <section id="features" className="features section">
+       <section className="features section">
          <div className="feature-card">
            <i className="fas fa-robot feature-icon"></i>
            <h3>Automatyzacja</h3>
@@ -65,7 +65,7 @@ import React from "react";
          </div>
        </section>
        <AboutSection />
-       <FAQSection />
+       <section id="features"> <FAQSection /> </section>
        <PartnersSection />
        {/*<HowItWorks />*/}
      </div>
