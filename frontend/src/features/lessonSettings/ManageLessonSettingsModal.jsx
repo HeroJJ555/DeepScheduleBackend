@@ -4,13 +4,8 @@ import './manageLessonSettingsModal.css';
 import { useUpdateLessonSettings } from './useLessonSettings';
 import { toast } from 'react-toastify';
 
-export default function ManageLessonSettingsModal({
-  schoolId,
-  settings,
-  loading,
-  isOpen,
-  onClose
-}) {
+export default function ManageLessonSettingsModal({schoolId, settings, loading, isOpen, onClose})
+{
   const update = useUpdateLessonSettings(schoolId);
   const [form, setForm] = useState({
     lessonDuration: 45,

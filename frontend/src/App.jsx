@@ -6,7 +6,8 @@ import CookieBanner from "./components/CookieBanner";
 
 import './App.css';
 
-export default function App() {
+export default function App()
+{
   return (
     <div className="app-wrapper">
       <Navbar />

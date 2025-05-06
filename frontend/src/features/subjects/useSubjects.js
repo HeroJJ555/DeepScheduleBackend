@@ -2,7 +2,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../api/client';
 
-export function useSubjects(schoolId, { enabled = false } = {}) {
+export function useSubjects(schoolId, { enabled = false } = {})
+{
   return useQuery({
     queryKey: ['subjects', schoolId],
     queryFn: () => api.get(`/schools/${schoolId}/subjects`).then(r => r.data),
@@ -10,7 +11,8 @@ export function useSubjects(schoolId, { enabled = false } = {}) {
   });
 }
 
-export function useCreateSubject(schoolId) {
+export function useCreateSubject(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: data => api.post(`/schools/${schoolId}/subjects`, data).then(r => r.data),
@@ -18,7 +20,8 @@ export function useCreateSubject(schoolId) {
   });
 }
 
-export function useUpdateSubject(schoolId) {
+export function useUpdateSubject(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, name }) =>
@@ -27,7 +30,8 @@ export function useUpdateSubject(schoolId) {
   });
 }
 
-export function useDeleteSubject(schoolId) {
+export function useDeleteSubject(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: id => api.delete(`/subjects/${id}`),

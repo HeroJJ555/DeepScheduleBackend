@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-export default function RoomForm({ initial = {}, onSubmit, onCancel }) {
+export default function RoomForm({ initial = {}, onSubmit, onCancel })
+{
   const [name, setName]     = useState('');
   const [capacity, setCapacity] = useState('');
 

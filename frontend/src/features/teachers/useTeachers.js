@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../../api/client'
 
-export function useTeachers(schoolId, opts = {}) {
+export function useTeachers(schoolId, opts = {})
+{
   return useQuery({
     queryKey: ['teachers', schoolId],
     queryFn: () =>
@@ -10,7 +11,8 @@ export function useTeachers(schoolId, opts = {}) {
   })
 }
 
-export function useCreateTeacher(schoolId) {
+export function useCreateTeacher(schoolId)
+{
   const qc = useQueryClient()
   return useMutation({
     mutationFn: data =>
@@ -21,7 +23,8 @@ export function useCreateTeacher(schoolId) {
   })
 }
 
-export function useUpdateTeacher(schoolId) {
+export function useUpdateTeacher(schoolId)
+{
   const qc = useQueryClient()
   return useMutation({
     mutationFn: data =>
@@ -32,7 +35,8 @@ export function useUpdateTeacher(schoolId) {
   })
 }
 
-export function useDeleteTeacher(schoolId) {
+export function useDeleteTeacher(schoolId)
+{
   const qc = useQueryClient()
   return useMutation({
     mutationFn: id =>

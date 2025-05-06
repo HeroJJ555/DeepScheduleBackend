@@ -2,90 +2,89 @@
 
 /* Overlay za modala */
 .cm-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1100;
-    animation: fadeInOverlay 0.25s ease-out;
-  }
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeInOverlay 0.25s ease-out;
+}
   
-  /* Właściwy modal potwierdzenia */
-  .cm-modal {
-    background: #ffffff;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    animation: slideDownModal 0.25s ease-out;
-  }
+/* Właściwy modal potwierdzenia */
+.cm-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideDownModal 0.25s ease-out;
+}
   
-  /* Tekst wiadomości */
-  .cm-message {
-    margin: 0 0 1.25rem;
-    font-size: 1rem;
-    color: #333333;
-    line-height: 1.4;
-  }
+/* Tekst wiadomości */
+.cm-message {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  color: #333333;
+  line-height: 1.4;
+}
   
-  /* Kontener przycisków */
+/* Kontener przycisków */
+.cm-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+  
+/* Wspólne style przycisków (jeśli nie dziedziczą z globalnych .btn) */
+.cm-buttons .btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+  
+.cm-buttons .btn-secondary {
+  background: #eeeeee;
+  color: #333333;
+}
+  
+.cm-buttons .btn-danger {
+  background: #e53e3e;
+  color: #ffffff;
+}
+  
+.cm-buttons .btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+  
+.cm-buttons .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+  
+/* Animacje */
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+  
+@keyframes slideDownModal {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+  
+/* Responsywność: przyciski w kolumnie na bardzo wąskich ekranach */
+@media (max-width: 350px) {
   .cm-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
+    flex-direction: column-reverse;
+    align-items: stretch;
   }
-  
-  /* Wspólne style przycisków (jeśli nie dziedziczą z globalnych .btn) */
   .cm-buttons .btn {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: opacity 0.2s;
+    width: 100%;
   }
-  
-  .cm-buttons .btn-secondary {
-    background: #eeeeee;
-    color: #333333;
-  }
-  
-  .cm-buttons .btn-danger {
-    background: #e53e3e;
-    color: #ffffff;
-  }
-  
-  .cm-buttons .btn:hover:not(:disabled) {
-    opacity: 0.9;
-  }
-  
-  .cm-buttons .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  /* Animacje */
-  @keyframes fadeInOverlay {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  
-  @keyframes slideDownModal {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  
-  /* Responsywność: przyciski w kolumnie na bardzo wąskich ekranach */
-  @media (max-width: 350px) {
-    .cm-buttons {
-      flex-direction: column-reverse;
-      align-items: stretch;
-    }
-    .cm-buttons .btn {
-      width: 100%;
-    }
-  }
-  
+} 

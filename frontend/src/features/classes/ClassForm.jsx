@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-export default function ClassForm({ initial = {}, onSubmit, onCancel }) {
+export default function ClassForm({ initial = {}, onSubmit, onCancel })
+{
   const [name, setName] = useState('');
 
   useEffect(() => {

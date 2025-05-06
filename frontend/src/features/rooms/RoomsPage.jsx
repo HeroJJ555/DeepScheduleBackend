@@ -7,7 +7,8 @@ import {
 } from './useRooms';
 import RoomForm from './RoomForm';
 
-export default function RoomsPage() {
+export default function RoomsPage()
+{
   const { data: rooms = [], isLoading } = useRooms();
   const create = useCreateRoom();
   const update = useUpdateRoom();

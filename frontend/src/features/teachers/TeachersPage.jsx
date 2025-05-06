@@ -7,7 +7,8 @@ import {
 } from './useTeachers';
 import TeacherForm from './TeacherForm';
 
-export default function TeachersPage() {
+export default function TeachersPage()
+{
   const { data: teachers = [], isLoading } = useTeachers();
   const create = useCreateTeacher();
   const update = useUpdateTeacher();

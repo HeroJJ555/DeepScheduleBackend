@@ -1,59 +1,58 @@
 .notfound-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: calc(100vh - var(--nav-height) - 100px); /* uwzględnij navbar + footer */
-    padding: 2rem;
-    background: linear-gradient(135deg, #f0f4ff, #d9e4ff);
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-height) - 100px); /* uwzględnij navbar + footer */
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f4ff, #d9e4ff);
+}
+ 
+.notfound-content {
+  text-align: center;
+  animation: fadeIn 0.6s ease-out both;
+}
   
-  .notfound-content {
-    text-align: center;
-    animation: fadeIn 0.6s ease-out both;
-  }
+.notfound-code {
+  font-size: 8rem;
+  margin: 0;
+  color: #667eea;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
   
-  .notfound-code {
-    font-size: 8rem;
-    margin: 0;
-    color: #667eea;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
+.notfound-text {
+  font-size: 1.5rem;
+  margin: 1rem 0 2rem;
+  color: #333;
+}
   
-  .notfound-text {
-    font-size: 1.5rem;
-    margin: 1rem 0 2rem;
-    color: #333;
-  }
+.notfound-btn {
+  padding: 0.75rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease;
+  background-size: 200% 200%;
+  background-position: left center;
+}
   
-  .notfound-btn {
-    padding: 0.75rem 1.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #fff;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 0.75rem;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease;
-    background-size: 200% 200%;
-    background-position: left center;
-  }
+.notfound-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.16);
+  background-position: right center;
+}
   
-  .notfound-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.16);
-    background-position: right center;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
+}  

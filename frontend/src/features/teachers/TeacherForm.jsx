@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-export default function TeacherForm({ initial = {}, onSubmit, onCancel }) {
+export default function TeacherForm({ initial = {}, onSubmit, onCancel })
+{
   const [name, setName]   = useState('');
   const [email, setEmail] = useState('');
 

@@ -41,7 +41,7 @@ export default function ManageSchoolModal({ schoolId, isOpen, onClose })
   useEffect(() =>
   {
     if (isOpen && school)
-      {
+    {
       setForm({
         name:    school.name    || '',
         type:    school.type    || 'LO',
@@ -87,7 +87,8 @@ export default function ManageSchoolModal({ schoolId, isOpen, onClose })
     });
 
   const handleMemberRemove = userId =>
-    removeMem.mutate(userId, {
+    removeMem.mutate(userId,
+    {
       onSuccess: () => toast.success('Usunięto z szkoły'),
       onError:   () => toast.error('Błąd usuwania')
     });

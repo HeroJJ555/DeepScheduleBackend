@@ -7,13 +7,15 @@ export const AuthContext = createContext({
   logout: () => {},
 });
 
-export function AuthProvider({ children }) {
+export function AuthProvider({ children })
+{
   const [user, setUser] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token)
+    {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
         .get("/api/users/me")
@@ -22,14 +24,11 @@ export function AuthProvider({ children }) {
           localStorage.removeItem("token");
         })
         .finally(() => setLoadingAuth(false));
-    } else {
-      setLoadingAuth(false);
-    }
+    } else setLoadingAuth(false);
   }, []);
 
-  if (loadingAuth) {
+  if (loadingAuth)
     return <div className="auth-loading">Ładowanie…</div>;
-  }
 
   const login = async (email, password) => {
     const res = await axios.post("/api/auth/login", { email, password });

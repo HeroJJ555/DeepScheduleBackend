@@ -1,7 +1,8 @@
 import React from 'react';
 import './AnnouncementsPage.css';
 
-export default function AnnouncementsPage() {
+export default function AnnouncementsPage()
+{
   return (
     <div className="announcements-page">
       <h2>Ogłoszenia</h2>

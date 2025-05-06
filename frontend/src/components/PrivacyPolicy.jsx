@@ -1,7 +1,8 @@
 import React from 'react';
 import './privacy.css';
 
-export default function PrivacyPolicy() {
+export default function PrivacyPolicy()
+{
   return (
     <section className="privacy section" id="privacy">
       <h2>Polityka prywatności</h2>

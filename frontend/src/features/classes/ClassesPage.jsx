@@ -8,7 +8,8 @@ import {
 } from './useClasses';
 import ClassForm from './ClassForm';
 
-export default function ClassesPage() {
+export default function ClassesPage()
+{
   const { schoolId } = useParams();                // pobieramy z URL
   const { data: classes = [], isLoading } = useClasses(schoolId);
   const createClass = useCreateClass(schoolId);

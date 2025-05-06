@@ -5,7 +5,8 @@ import api from '../../api/client';
  * Pobiera listę sal w danej szkole.
  * @param {string|number} schoolId
  */
-export function useRooms(schoolId) {
+export function useRooms(schoolId)
+{
   return useQuery({
     queryKey: ['rooms', schoolId],
     queryFn: () =>
@@ -18,7 +19,8 @@ export function useRooms(schoolId) {
  * Tworzy nową salę w danej szkole.
  * @param {string|number} schoolId
  */
-export function useCreateRoom(schoolId) {
+export function useCreateRoom(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: data =>
@@ -33,7 +35,8 @@ export function useCreateRoom(schoolId) {
  * Aktualizuje salę po jej ID.
  * @param {string|number} schoolId
  */
-export function useUpdateRoom(schoolId) {
+export function useUpdateRoom(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: data =>
@@ -48,7 +51,8 @@ export function useUpdateRoom(schoolId) {
  * Usuwa salę o danym ID.
  * @param {string|number} schoolId
  */
-export function useDeleteRoom(schoolId) {
+export function useDeleteRoom(schoolId)
+{
   const qc = useQueryClient();
   return useMutation({
     mutationFn: id => api.delete(`/rooms/${id}`),

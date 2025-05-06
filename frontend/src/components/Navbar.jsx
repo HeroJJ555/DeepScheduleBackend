@@ -3,12 +3,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 import useAuth from "../auth/useAuth";
 import "./Navbar.css";
 
-export default function Navbar() {
+export default function Navbar()
+{
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
+    logout();    //animacja wylogowania???
     navigate("/");
   };
 

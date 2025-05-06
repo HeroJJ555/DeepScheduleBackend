@@ -1,72 +1,71 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   }
 
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    line-height: 1.6;
-    color: #111111;
-  }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  color: #111111;
+}
 
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
-  .form-card {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    margin: 1rem 0;
-  }
+.form-card {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin: 1rem 0;
+}
 
-  .form-card label {
-    display: block;
-    margin-bottom: 1rem;
-    font-weight: 500;
-  }
+.form-card label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
 
-  .form-card input {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.25rem;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
-  }
+.form-card input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+}
 
-  .form-actions {
-    margin-top: 1rem;
-    display: flex;
-    gap: 1rem;
-  }
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
 
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-  }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
 
-  .data-table th,
-  .data-table td {
-    padding: 0.75rem;
-    border: 1px solid #e0e0e0;
-    text-align: left;
-  }
+.data-table th,
+.data-table td {
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
 
-  .btn-delete {
-    margin-left: 0.5rem;
-    background: #e53e3e;
-    color: #fff;
-    border: none;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-  }
+.btn-delete {
+  margin-left: 0.5rem;
+  background: #e53e3e;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
   
-  .btn-delete:hover {
-    background: #c53030;
-  }
-  
+.btn-delete:hover {
+  background: #c53030;
+}

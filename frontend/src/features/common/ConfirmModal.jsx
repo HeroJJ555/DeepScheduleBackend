@@ -1,7 +1,8 @@
 import React from 'react';
 import './confirmModal.css';
 
-export default function ConfirmModal({ message, onConfirm, onCancel }) {
+export default function ConfirmModal({ message, onConfirm, onCancel })
+{
   return (
     <div className="cm-overlay" onClick={onCancel}>
       <div className="cm-modal" onClick={e=>e.stopPropagation()}>
@@ -16,5 +17,5 @@ export default function ConfirmModal({ message, onConfirm, onCancel }) {
         </div>
       </div>
     </div>
-);
+  );
 }

@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PanelPage.css';
 
-export default function PanelPage() {
+export default function PanelPage() 
+{
   const nav = useNavigate();
 
   const cards = [

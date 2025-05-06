@@ -1,7 +1,8 @@
 import React from 'react';
 import './WikiPage.css';
 
-export default function WikiPage() {
+export default function WikiPage()
+{
   return (
     <div className="wiki-page">
       <h2>Wiki</h2>

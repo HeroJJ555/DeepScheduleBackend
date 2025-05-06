@@ -1,6 +1,7 @@
 import React from 'react';
 
-export default function GeneratePage() {
+export default function GeneratePage()
+{
   return (
     <section className="section">
       <h2>Generowanie planu</h2>
