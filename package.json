@@ -16,7 +16,8 @@
         "dev:backend": "cd backend && npm run start",
         "dev:frontend": "cd frontend && npm run dev",
         "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
-        "postinstall": "npm install --prefix backend && npm install --prefix frontend"
+        "generate": "cd backend && npx prisma generate",
+        "postinstall": "npm install --prefix backend && npm install --prefix frontend && npm run generate"
     },
     "devDependencies": {
         "concurrently": "^7.6.0"
