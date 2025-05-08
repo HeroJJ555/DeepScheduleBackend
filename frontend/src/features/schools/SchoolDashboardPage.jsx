@@ -47,7 +47,6 @@ export default function SchoolDashboardPage()
     {title: "Ustawienia szkoły", icon: "fa-solid fa-gears", path: "settings"},
   ];
 
-  //Funkcja odpowiedzialna za kliknięcie w przycisk
   function handleCardClick(c)
   {
     if (c.path === "teachers") return setShowTeachers(true);
@@ -101,6 +100,8 @@ export default function SchoolDashboardPage()
         isOpen={showSubjects}
         onClose={() => setShowSubjects(false)}
       />
+
+     {/*<RoomsPage/>*/}
 
       <ManageSchoolModal
         schoolId={schoolId}

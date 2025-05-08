@@ -140,6 +140,7 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
   };
 
   const handleDelete = () => {
+    //Nie DZIAŁA - Invalid 'prisma.teacher.delete()` invocation: Foreign key constraint violated: `foreign key`
     deleteT.mutate(form.id, {
       onSuccess: () => {
         toast.success("Usunięto nauczyciela");

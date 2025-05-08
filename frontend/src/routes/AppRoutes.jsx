@@ -44,10 +44,7 @@ export default function AppRoutes()
           <Route path="/panel/changelog" element={<ChangeLogPage />} />
           <Route path="/panel/schools" element={<SchoolsPage />} />
           <Route path="/panel/schools/new" element={<CreateSchoolPage />} />
-          <Route
-            path="/panel/schools/:schoolId"
-            element={<SchoolDashboardPage />}
-          >
+          <Route path="/panel/schools/:schoolId" element={<SchoolDashboardPage />}>
             <Route path="classes" element={<ClassesPage />} />
             <Route path="teachers" element={<TeachersPage />} />
             <Route path="rooms" element={<RoomsPage />} />
