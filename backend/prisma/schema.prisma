@@ -94,6 +94,7 @@ model Teacher {
   entries         TimetableEntry[]
   teacherSubjects TeacherSubject[]
   availabilities  TeacherAvailability[]
+  ClassSubject    ClassSubject[]
 }
 
 model TeacherAvailability {
@@ -115,6 +116,7 @@ model Subject {
   entries         TimetableEntry[]
   teacherSubjects TeacherSubject[]
   classSubjects   ClassSubject[]
+  RoomSubject     RoomSubject[]
 }
 
 model Class {
@@ -129,14 +131,24 @@ model Class {
 }
 
 model Room {
-  id        Int              @id @default(autoincrement())
-  name      String
-  capacity  Int?
-  school    School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  schoolId  Int
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  entries   TimetableEntry[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  capacity        Int?
+  school          School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schoolId        Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  entries         TimetableEntry[]
+  specialSubjects RoomSubject[]
+}
+
+model RoomSubject {
+  room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId    Int
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId Int
+
+  @@id([roomId, subjectId])
 }
 
 model TimeSlot {
@@ -168,11 +180,13 @@ model TimetableEntry {
 }
 
 model ClassSubject {
-  class     Class   @relation(fields: [classId], references: [id])
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
   classId   Int
-  subject   Subject @relation(fields: [subjectId], references: [id])
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   subjectId Int
-  hours     Int
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  teacherId Int?
+  extended  Boolean  @default(false)
 
   @@id([classId, subjectId])
 }

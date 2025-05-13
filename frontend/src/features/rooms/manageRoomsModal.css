@@ -1,0 +1,66 @@
+/* src/features/rooms/manageRoomsModal.css */
+
+/* Overlay */
+.rm-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal container */
+.rm-modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  padding: 1rem;
+  position: relative;
+}
+
+/* Header */
+.rm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rm-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+}
+
+/* Form rows */
+.rm-form .rm-row {
+  margin-bottom: 1rem;
+}
+.rm-form label {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* Actions */
+.rm-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Footer list */
+.rm-footer {
+  margin-top: 1.5rem;
+}
+.rm-list {
+  list-style: none;
+  padding: 0;
+}
+.rm-list li {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.rm-list li:hover {
+  background: #f0f0f0;
+}

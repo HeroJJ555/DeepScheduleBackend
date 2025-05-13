@@ -1,13 +1,6 @@
-// src/features/teachers/ManageTeachersModal.jsx
+// frontend/src/features/teachers/ManageTeachersModal.jsx
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  FaUserTie,
-  FaBook,
-  FaClock,
-  FaTrash,
-  FaSave,
-  FaPlus,
-} from "react-icons/fa";
+import { FaUserTie, FaBook, FaClock, FaTrash, FaSave, FaPlus } from "react-icons/fa";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import {
@@ -19,17 +12,26 @@ import {
 import { useTimeSlots } from "../timeslots/useTimeSlots";
 import "./manageTeachersModal.css";
 
-export default function ManageTeachersModal({schoolId, subjects = [], lessonSettings,isOpen,onClose})
-{
-  const { data: teachers = [], isLoading: loadingTeachers } = useTeachers(schoolId,{ enabled: isOpen });
-  console.log('[Debug] fetched teachers:', teachers);
-
+export default function ManageTeachersModal({
+  schoolId,
+  subjects = [],
+  lessonSettings,
+  isOpen,
+  onClose,
+}) {
+  const { data: teachers = [], isLoading: loadingTeachers } = useTeachers(
+    schoolId,
+    { enabled: isOpen }
+  );
   const createT = useCreateTeacher(schoolId);
   const updateT = useUpdateTeacher(schoolId);
   const deleteT = useDeleteTeacher(schoolId);
-  
-  const { data: timeslots = [], isLoading: loadingSlots } = useTimeSlots(schoolId,{ enabled: isOpen });
-  //console.log('[Debug] timeslots:', timeslots);
+
+  const { data: timeslots = [], isLoading: loadingSlots } = useTimeSlots(
+    schoolId,
+    { enabled: isOpen }
+  );
+
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     id: null,
@@ -67,6 +69,7 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
     return labels;
   }, [lessonSettings]);
 
+  // reset form on open
   useEffect(() => {
     if (isOpen) {
       setEditing(false);
@@ -81,7 +84,6 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
   }, [isOpen]);
 
   if (!isOpen) return null;
-
   if (loadingSlots || !lessonSettings) {
     return (
       <div className="mtm-overlay" onClick={onClose}>
@@ -113,25 +115,38 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const payload = {
+      name: form.name.trim(),
+      subjectIds: form.subjectIds,
+      timeslotIds: form.timeslotIds,
+      workload: form.workload,
+    };
+    if (editing) payload.id = form.id;
+
     const fn = editing ? updateT : createT;
-    fn.mutate(form, {
-      onSuccess: () => {
-        /*
-        * WYMAGA NAPRAWY, NIE SUBMITUJE TABLICY Z DOSTĘPNOŚCIĄ, LOG SIĘ NIE WYŚWIETLA
-        * ????????????????????????????????????????????????????????????????????????????
-        * CZEMU? DLACZEGO? WTF? 
-        */
-        console.log('[Debug] submitted teachers:', teachers);
+    fn.mutate(payload, {
+      onSuccess: (resp) => {
         toast.success(editing ? "Zapisano zmiany" : "Dodano nauczyciela");
-        setEditing(false);
-        setForm({
-          id: null,
-          name: "",
-          subjectIds: [],
-          workload: 0,
-          timeslotIds: [],
-        });
-        
+
+        if (editing) {
+          // odśwież formularz na podstawie odpowiedzi z backendu
+          setForm({
+            id: resp.id,
+            name: resp.name,
+            workload: resp.workload || 0,
+            subjectIds: resp.teacherSubjects.map((ts) => ts.subject.id),
+            timeslotIds: resp.availabilities.map((a) => a.timeslot.id),
+          });
+        } else {
+          // po dodaniu wyczyść form, żeby dodać kolejnego
+          setForm({
+            id: null,
+            name: "",
+            subjectIds: [],
+            workload: 0,
+            timeslotIds: [],
+          });
+        }
       },
       onError: (err) => {
         toast.error(err.response?.data?.error || "Błąd");
@@ -140,7 +155,6 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
   };
 
   const handleDelete = () => {
-    //Nie DZIAŁA - Invalid 'prisma.teacher.delete()` invocation: Foreign key constraint violated: `foreign key`
     deleteT.mutate(form.id, {
       onSuccess: () => {
         toast.success("Usunięto nauczyciela");
@@ -178,7 +192,9 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
             <input
               type="text"
               value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, name: e.target.value }))
+              }
               required
             />
           </div>
@@ -245,9 +261,7 @@ export default function ManageTeachersModal({schoolId, subjects = [], lessonSett
                       return (
                         <td
                           key={day}
-                          className={
-                            slot ? (sel ? "selected" : "") : "disabled"
-                          }
+                          className={slot ? (sel ? "selected" : "") : "disabled"}
                           onClick={() => slot && toggleSlot(slot.id)}
                         >
                           {sel && <span className="mtm-check">✓</span>}

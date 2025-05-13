@@ -5,17 +5,30 @@ import * as classController from '../controllers/classController.js';
 
 const router = Router();
 
-router.get('/:schoolId/classes', classController.listClasses);
-router.post('/:schoolId/classes',
+// Lista i tworzenie
+router.get(
+  '/schools/:schoolId/classes',
+  classController.listClasses
+);
+router.post(
+  '/schools/:schoolId/classes',
   validateSchema(classSchema),
   classController.createClass
 );
 
-router.get('/classes/:classId', classController.getClass);
-router.put('/classes/:classId',
+// Pobranie, aktualizacja, usunięcie pojedynczej klasy
+router.get(
+  '/schools/:schoolId/classes/:classId',
+  classController.getClass
+);
+router.put(
+  '/schools/:schoolId/classes/:classId',
   validateSchema(classSchema),
   classController.updateClass
 );
-router.delete('/classes/:classId', classController.deleteClass);
+router.delete(
+  '/schools/:schoolId/classes/:classId',
+  classController.deleteClass
+);
 
 export default router;

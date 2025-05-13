@@ -1,36 +1,121 @@
-import * as classService from '../services/classService.js';
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
+// GET /schools/:schoolId/classes
 export async function listClasses(req, res, next) {
   try {
-    const list = await classService.listClasses(req.params.schoolId, req.user);
-    res.json(list);
-  } catch (e) { next(e) }
+    const schoolId = Number(req.params.schoolId);
+    const classes = await prisma.class.findMany({
+      where: { schoolId },
+      include: {
+        classSubjects: {
+          include: { subject: true, teacher: true }
+        }
+      }
+    });
+    res.json(classes);
+  } catch (e) {
+    next(e);
+  }
 }
 
-export async function createClass(req, res, next) {
-  try {
-    const c = await classService.createClass(req.params.schoolId, req.body, req.user);
-    res.status(201).json(c);
-  } catch (e) { next(e) }
-}
-
+// GET /classes/:classId
 export async function getClass(req, res, next) {
   try {
-    const c = await classService.getClass(req.params.classId, req.user);
-    res.json(c);
-  } catch (e) { next(e) }
+    const id = Number(req.params.classId);
+    const cls = await prisma.class.findUnique({
+      where: { id },
+      include: {
+        classSubjects: {
+          include: { subject: true, teacher: true }
+        }
+      }
+    });
+    if (!cls) return res.status(404).json({ error: "Klasa nie istnieje" });
+    res.json(cls);
+  } catch (e) {
+    next(e);
+  }
 }
 
+// POST /schools/:schoolId/classes
+export async function createClass(req, res, next) {
+  try {
+    const schoolId = Number(req.params.schoolId);
+    const { name, classSubjects: raw = [] } = req.body;
+
+    if (!name?.trim()) return res.status(400).json({ error: "Nazwa klasy wymagana" });
+
+    const entries = Array.isArray(raw)
+      ? raw
+          .map(cs => ({
+            subjectId: Number(cs.subjectId),
+            teacherId: cs.teacherId != null ? Number(cs.teacherId) : undefined,
+            extended: Boolean(cs.extended)
+          }))
+          .filter(e => Number.isInteger(e.subjectId))
+      : [];
+
+    const cls = await prisma.class.create({
+      data: {
+        name: name.trim(),
+        school: { connect: { id: schoolId } },
+        classSubjects: { createMany: { data: entries } }
+      },
+      include: {
+        classSubjects: { include: { subject: true, teacher: true } }
+      }
+    });
+    res.status(201).json(cls);
+  } catch (e) {
+    next(e);
+  }
+}
+
+// PUT /classes/:classId
 export async function updateClass(req, res, next) {
   try {
-    const c = await classService.updateClass(req.params.classId, req.body, req.user);
-    res.json(c);
-  } catch (e) { next(e) }
+    const id = Number(req.params.classId);
+    const { name, classSubjects: raw = [] } = req.body;
+
+    const existing = await prisma.class.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: "Klasa nie istnieje" });
+
+    const entries = Array.isArray(raw)
+      ? raw
+          .map(cs => ({
+            subjectId: Number(cs.subjectId),
+            teacherId: cs.teacherId != null ? Number(cs.teacherId) : undefined,
+            extended: Boolean(cs.extended)
+          }))
+          .filter(e => Number.isInteger(e.subjectId))
+      : [];
+
+    await prisma.classSubject.deleteMany({ where: { classId: id } });
+
+    const updated = await prisma.class.update({
+      where: { id },
+      data: {
+        name: name?.trim() || existing.name,
+        classSubjects: { createMany: { data: entries } }
+      },
+      include: {
+        classSubjects: { include: { subject: true, teacher: true } }
+      }
+    });
+    res.json(updated);
+  } catch (e) {
+    next(e);
+  }
 }
 
+// DELETE /classes/:classId
 export async function deleteClass(req, res, next) {
   try {
-    await classService.deleteClass(req.params.classId, req.user);
-    res.status(204).end();
-  } catch (e) { next(e) }
+    const id = Number(req.params.classId);
+    await prisma.class.delete({ where: { id } });
+    res.sendStatus(204);
+  } catch (e) {
+    next(e);
+  }
 }

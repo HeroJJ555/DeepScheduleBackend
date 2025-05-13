@@ -1,3 +1,4 @@
+// backend/src/services/timeslotService.js
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -8,9 +9,7 @@ export async function ensureTimeSlotsForSchool(schoolId) {
   const existing = await prisma.timeSlot.count({ where: { schoolId: id } });
   if (existing > 0) return;
 
-  let settings = await prisma.lessonSettings.findUnique({
-    where: { schoolId: id },
-  });
+  let settings = await prisma.lessonSettings.findUnique({ where: { schoolId: id } });
   if (!settings) {
     const school = await prisma.school.findUnique({ where: { id } });
     if (!school) return;
@@ -32,6 +31,8 @@ export async function ensureTimeSlotsForSchool(schoolId) {
 }
 
 export async function listTimeSlots(schoolId) {
+  // ensure slots exist before returning so the UI can render them immediately
+  await ensureTimeSlotsForSchool(schoolId);
   return prisma.timeSlot.findMany({
     where: { schoolId: Number(schoolId) },
     select: { id: true, day: true, hour: true },

@@ -1,3 +1,4 @@
+// backend/src/controllers/teacherController.js
 import { PrismaClient } from "@prisma/client";
 import { ensureTimeSlotsForSchool } from "../services/timeslotService.js";
 const prisma = new PrismaClient();
@@ -22,16 +23,18 @@ export async function createTeacher(req, res, next) {
   try {
     const schoolId = Number(req.params.schoolId);
     await ensureTimeSlotsForSchool(schoolId);
+
     const { name, subjectIds = [], timeslotIds: raw = [], workload } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: "Nazwa wymagana" });
 
+    // filter & validate incoming slot IDs
     const timeslotIds = raw.map(Number).filter(id => Number.isInteger(id) && id > 0);
-    const existing = await prisma.timeSlot.findMany({
+    const existingSlots = await prisma.timeSlot.findMany({
       where: { schoolId },
       select: { id: true }
     });
-    const valid = new Set(existing.map(s => s.id));
-    const filtered = timeslotIds.filter(id => valid.has(id));
+    const validSlotIds = new Set(existingSlots.map(s => s.id));
+    const filteredSlotIds = timeslotIds.filter(id => validSlotIds.has(id));
 
     const teacher = await prisma.teacher.create({
       data: {
@@ -39,14 +42,14 @@ export async function createTeacher(req, res, next) {
         workload,
         school: { connect: { id: schoolId } },
         teacherSubjects: {
-          create: subjectIds.map(id => ({
-            subject: { connect: { id: Number(id) } }
-          }))
+          createMany: {
+            data: subjectIds.map(id => ({ subjectId: Number(id) }))
+          }
         },
         availabilities: {
-          create: filtered.map(id => ({
-            timeslot: { connect: { id } }
-          }))
+          createMany: {
+            data: filteredSlotIds.map(id => ({ timeslotId: id }))
+          }
         }
       },
       include: {
@@ -71,14 +74,16 @@ export async function updateTeacher(req, res, next) {
 
     await ensureTimeSlotsForSchool(teacher.schoolId);
 
+    // filter & validate incoming slot IDs
     const timeslotIds = raw.map(Number).filter(id => Number.isInteger(id) && id > 0);
-    const existing = await prisma.timeSlot.findMany({
+    const existingSlots = await prisma.timeSlot.findMany({
       where: { schoolId: teacher.schoolId },
       select: { id: true }
     });
-    const valid = new Set(existing.map(s => s.id));
-    const filtered = timeslotIds.filter(id => valid.has(id));
+    const validSlotIds = new Set(existingSlots.map(s => s.id));
+    const filteredSlotIds = timeslotIds.filter(id => validSlotIds.has(id));
 
+    // clear old relations
     await prisma.teacherSubject.deleteMany({ where: { teacherId: id } });
     await prisma.teacherAvailability.deleteMany({ where: { teacherId: id } });
 
@@ -88,14 +93,14 @@ export async function updateTeacher(req, res, next) {
         name: name.trim(),
         workload,
         teacherSubjects: {
-          create: subjectIds.map(sid => ({
-            subject: { connect: { id: Number(sid) } }
-          }))
+          createMany: {
+            data: subjectIds.map(sid => ({ subjectId: Number(sid) }))
+          }
         },
         availabilities: {
-          create: filtered.map(tid => ({
-            timeslot: { connect: { id: tid } }
-          }))
+          createMany: {
+            data: filteredSlotIds.map(tid => ({ timeslotId: tid }))
+          }
         }
       },
       include: {

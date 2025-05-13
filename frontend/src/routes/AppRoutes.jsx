@@ -6,7 +6,7 @@ import RegisterPage from "../auth/RegisterPage";
 import LoginPage from "../auth/LoginPage";
 import HomePage from "../features/home/HomePage";
 import PanelPage from "../features/panel/PanelPage";
-import PrivacyPolicy from '../components/PrivacyPolicy';
+import PrivacyPolicy from "../components/PrivacyPolicy";
 import ProfilePage from "../features/profile/ProfilePage";
 import AnnouncementsPage from "../features/announcements/AnnouncementsPage";
 import ChangeLogPage from "../features/changelog/ChangeLogPage";
@@ -14,7 +14,7 @@ import WikiPage from "../features/wiki/WikiPage";
 import CreateSchoolPage from "../features/schools/CreateSchoolPage";
 import SchoolsPage from "../features/schools/SchoolsPage";
 import SupportPage from "../features/support/SupportPage";
-import SchoolDashboardPage from '../features/schools/SchoolDashboardPage';
+import SchoolDashboardPage from "../features/schools/SchoolDashboardPage";
 import ClassesPage from "../features/classes/ClassesPage";
 import TeachersPage from "../features/teachers/TeachersPage";
 import RoomsPage from "../features/rooms/RoomsPage";
@@ -25,8 +25,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 import ProtectedRoute from "../components/ProtectedRoute";
 console.log("🏠 HomePage render");
-export default function AppRoutes()
-{
+export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
@@ -44,10 +43,14 @@ export default function AppRoutes()
           <Route path="/panel/changelog" element={<ChangeLogPage />} />
           <Route path="/panel/schools" element={<SchoolsPage />} />
           <Route path="/panel/schools/new" element={<CreateSchoolPage />} />
-          <Route path="/panel/schools/:schoolId" element={<SchoolDashboardPage />}>
+          <Route
+            path="/panel/schools/:schoolId"
+            element={<SchoolDashboardPage />}
+          >
             <Route path="classes" element={<ClassesPage />} />
-            <Route path="teachers" element={<TeachersPage />} />
             <Route path="rooms" element={<RoomsPage />} />
+            <Route path="teachers" element={<TeachersPage />} />
+
             <Route path="generate" element={<GeneratePage />} />
             <Route path="timetable" element={<TimetableView />} />
           </Route>
