@@ -5,7 +5,6 @@ import * as roomController from '../controllers/roomController.js';
 
 const router = Router();
 
-// Lista i tworzenie
 router.get(
   '/schools/:schoolId/rooms',
   roomController.listRooms
